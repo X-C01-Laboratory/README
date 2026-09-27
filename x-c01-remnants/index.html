@@ -6,443 +6,521 @@
 <title>X-C01 残页</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;600&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Ma+Shan+Zheng&family=Courier+Prime&display=swap">
 <style>
-  /* 单一视觉：深色书桌 + 旧纸档案。刻意只做一套主题。 */
+  /* 只有一套深色主题：深夜里的聊天窗口。 */
   :root {
     color-scheme: dark;
-    --desk: #1d1b18;
-    --desk-edge: #2b2823;
-    --paper: #ddd5c4;
-    --paper-shade: #cfc5b0;
-    --ink: #2a2520;
-    --ink-soft: #5f574c;
-    --carbon: #34506b;
-    --stamp: #9a2f27;
-    --dim: #8c8475;
-    --font-display: "ZCOOL XiaoWei", "Songti SC", "STSong", serif;
-    --font-body: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    --void: #050505;
+    --bg: #101211;
+    --bar: #181a19;
+    --line: #262927;
+    --in: #242726;
+    --out: #3b6645;
+    --out-text: #e3eee4;
+    --text: #d4d7d2;
+    --muted: #6d736d;
+    --blood: #a31d1d;
+    --paper: #c9c0ab;
+    --ink: #2a241f;
+    --font: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-hand: "Ma Shan Zheng", "STKaiti", "KaiTi", cursive;
     --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
-  html, body { min-height: 100%; }
+  html, body { height: 100%; }
   body {
-    margin: 0;
-    background: radial-gradient(120% 80% at 50% 0%, var(--desk-edge), var(--desk) 60%);
-    background-color: var(--desk);
-    color: var(--paper);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.8;
-    padding-inline: 16px;
-    padding-block: 28px 56px;
+    margin: 0; background: var(--void); color: var(--text);
+    font-family: var(--font); font-size: 15px; line-height: 1.6;
+    display: flex; justify-content: center;
   }
-  .wrap { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  .app {
+    position: relative; width: 100%; max-width: 460px; height: 100%;
+    display: flex; flex-direction: column; background: var(--bg);
+    border-inline: 1px solid #1c1e1d; overflow: hidden;
+  }
+  /* 顶栏 */
+  .bar {
+    flex: none; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center;
+    background: var(--bar); border-bottom: 1px solid var(--line); padding: 8px 6px;
+  }
+  .who { text-align: center; line-height: 1.3; min-width: 0; }
+  .who b { display: block; font-weight: 500; font-size: 16px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who span { font-size: 11px; color: var(--muted); }
+  .who span.typing { color: #8fb596; }
+  .iconbtn { width: 40px; height: 36px; display: grid; place-items: center; background: none; border: 0; color: var(--text); cursor: pointer; border-radius: 6px; }
+  .iconbtn:hover { background: #222523; }
+  .iconbtn svg { width: 22px; height: 22px; }
+  :focus-visible { outline: 2px solid #8fb596; outline-offset: 2px; }
 
-  header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .brand { font-family: var(--font-display); font-size: 28px; letter-spacing: .08em; color: var(--paper); margin: 0; }
-  .brand small { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--dim); margin-left: 10px; }
-  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-  .tab {
-    font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums;
-    width: 30px; height: 26px; display: grid; place-items: center;
-    border: 1px solid #4a453d; color: var(--dim); background: transparent; border-radius: 3px 3px 0 0;
-    cursor: pointer; padding: 0;
-  }
-  .tab[aria-current="true"] { background: var(--paper); color: var(--ink); border-color: var(--paper); }
-  .tab:disabled { opacity: .35; cursor: not-allowed; }
-  .tab:focus-visible, button:focus-visible, input:focus-visible { outline: 2px dashed #b9ad93; outline-offset: 2px; }
+  .menu { position: absolute; right: 8px; top: 54px; z-index: 5; background: #1e201f; border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; min-width: 190px; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+  .menu[hidden] { display: none; }
+  .menu button { text-align: left; background: none; border: 0; color: var(--text); font: inherit; padding: 9px 12px; border-radius: 4px; cursor: pointer; }
+  .menu button:hover { background: #2a2d2b; }
+  .menu button.danger { color: #e06a6a; }
 
-  /* 纸页 */
-  .sheet {
-    position: relative;
-    background:
-      repeating-linear-gradient(0deg, rgba(60,50,35,.035) 0 1px, transparent 1px 4px),
-      var(--paper);
-    color: var(--ink);
-    padding: 34px clamp(18px, 5vw, 44px) 30px;
-    box-shadow: 0 1px 0 var(--paper-shade), 0 18px 40px rgba(0,0,0,.55);
-    transform: rotate(-.35deg);
-    animation: slidein .5s ease-out;
+  /* 消息区 */
+  .msgs { flex: 1; overflow-y: auto; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 14px; overscroll-behavior: contain; }
+  .sys { align-self: center; font-size: 12px; color: var(--muted); text-align: center; max-width: 85%; }
+  .sys.red { color: #c24a4a; }
+  .row { display: flex; gap: 10px; align-items: flex-start; }
+  .row.me { flex-direction: row-reverse; }
+  .ava {
+    flex: none; width: 38px; height: 38px; border-radius: 5px; display: grid; place-items: center;
+    font-size: 16px; color: #cfd2cd; background: #3a3f3c; user-select: none;
   }
-  @keyframes slidein { from { transform: translateY(8px) rotate(-.35deg); opacity: .6; } }
-  @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
-  .sheet-head {
-    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-    font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--ink-soft);
-    border-bottom: 1px solid #b7ad98; padding-bottom: 8px; margin-bottom: 18px;
-    font-variant-numeric: tabular-nums;
+  .ava.lin { background: linear-gradient(160deg, #3b3d44, #1c1d21); color: #a9acb6; }
+  .ava.me  { background: linear-gradient(160deg, #445a48, #28352b); }
+  .twisted .ava.lin { background: linear-gradient(160deg, #445a48, #28352b); color: #cfd2cd; }
+  .twisted .ava.lin::after { content: "我"; }
+  .twisted .ava.lin span { display: none; }
+  .bubble {
+    position: relative; max-width: min(72%, 300px); padding: 8px 11px; border-radius: 5px;
+    background: var(--in); color: var(--text); word-break: break-word; white-space: pre-wrap;
   }
-  .sheet h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(26px, 6vw, 34px); line-height: 1.3; margin: 0 0 14px; padding-right: 88px; text-wrap: balance; letter-spacing: .04em; }
-  .sheet p { margin: 0 0 12px; max-width: 36em; }
-  .stamp {
-    position: absolute; right: 18px; top: 64px;
-    font-family: var(--font-display); font-size: 22px; color: var(--stamp);
-    border: 3px double var(--stamp); padding: 0 10px; transform: rotate(8deg); opacity: .75;
-    letter-spacing: .2em; pointer-events: none;
-  }
-  .note { font-family: var(--font-mono); color: var(--carbon); font-size: 14px; }
-  .typed { font-family: var(--font-mono); font-size: 15px; line-height: 1.9; }
-  .redact { background: var(--ink); color: var(--ink); padding: 0 .2em; border-radius: 1px; }
-  .log { display: grid; gap: 2px; margin: 0 0 12px; }
-  .log div { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; }
-  .log time { font-family: var(--font-mono); color: var(--ink-soft); font-size: 13px; font-variant-numeric: tabular-nums; }
-  .ghost { color: var(--paper); }                /* 与纸同色：只有被选中时才看得见 */
-  .ghost::selection, .ghost *::selection { background: var(--stamp); color: #fff4e6; }
-  .sheet ::selection { background: #b9ad93; color: var(--ink); }
-  .sheet .ghost::selection { background: var(--stamp); color: #fff4e6; }
+  .bubble::before { content: ""; position: absolute; top: 13px; left: -5px; border: 5px solid transparent; border-left: 0; border-right-color: var(--in); }
+  .me .bubble { background: var(--out); color: var(--out-text); }
+  .me .bubble::before { left: auto; right: -5px; border: 5px solid transparent; border-right: 0; border-left-color: var(--out); }
+  .bubble.big { font-family: var(--font-mono); font-size: 24px; letter-spacing: .25em; }
+  .bubble.mirror span { display: inline-block; transform: scaleX(-1); }
+  .bubble.card { padding: 6px; max-width: min(78%, 300px); white-space: normal; }
+  .bubble.card::before { display: none; }
+  .cap { font-size: 11px; color: var(--muted); padding: 4px 2px 0; }
+  .appear { animation: pop .18s ease-out; }
+  @keyframes pop { from { opacity: 0; transform: translateY(4px); } }
 
-  /* 表单 */
-  form.answer { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 22px; padding-top: 16px; border-top: 1px dashed #b7ad98; }
-  form.answer label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--ink-soft); width: 100%; }
-  form.answer input {
-    flex: 1 1 200px; min-width: 0;
-    font-family: var(--font-mono); font-size: 18px; color: var(--ink);
-    background: transparent; border: 0; border-bottom: 2px solid var(--ink); padding: 4px 2px;
-  }
-  .btn {
-    font-family: var(--font-body); font-size: 15px; cursor: pointer;
-    background: var(--ink); color: var(--paper); border: 0; padding: 8px 18px; border-radius: 2px;
-  }
-  .btn.ghostbtn { background: transparent; color: var(--ink-soft); border: 1px solid #a99f89; }
-  .feedback { min-height: 1.8em; font-family: var(--font-mono); font-size: 14px; margin-top: 8px; color: var(--stamp); }
-  .feedback.ok { color: var(--carbon); }
-  .hints { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
-  .hints p { font-size: 14px; color: var(--carbon); margin: 0; font-family: var(--font-mono); }
-  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  /* 卡片：日志照片 */
+  .photo-log { background: var(--paper); color: var(--ink); padding: 12px 12px 10px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75; border-radius: 3px; filter: sepia(.2) brightness(.92); }
+  .photo-log div { display: grid; grid-template-columns: 6.6em 1fr; gap: 6px; }
+  .photo-log time { color: #6a6154; }
+  .redact { background: var(--ink); color: var(--ink); }
+  .ghost { color: var(--paper); }
+  .ghost::selection { background: var(--blood); color: #fff2ea; }
+  /* 卡片：视频里的灯 */
+  .video { position: relative; background: #000; height: 170px; border-radius: 3px; display: grid; place-items: center; overflow: hidden; }
+  .video .ts { position: absolute; right: 8px; bottom: 6px; font-family: var(--font-mono); font-size: 11px; color: #9a9a9a; }
+  .video .rec { position: absolute; left: 8px; top: 6px; font-family: var(--font-mono); font-size: 11px; color: #c33; }
+  .lamp { width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #3a3630, #141210 70%); }
+  .lamp.on { background: radial-gradient(circle at 40% 35%, #fff7d6, #f1cf7a 55%, #b8862d); box-shadow: 0 0 26px 8px rgba(241,207,122,.6), 0 0 80px 30px rgba(241,207,122,.2); }
+  /* 卡片：暗室 */
+  .dark { position: relative; height: 260px; background: #bfb6a1; overflow: hidden; border-radius: 3px; touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
+  .dark i { position: absolute; font-style: normal; font-family: var(--font-hand); color: #5a1010; white-space: nowrap; }
+  .dark .shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--x, -200px) var(--y, -200px), transparent 0 36px, rgba(4,4,4,.985) 74px); }
+  .dark .tip { position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #555; z-index: 1; pointer-events: none; }
+  /* 卡片：档案 */
+  .file { background: var(--paper); color: var(--ink); padding: 12px; border-radius: 3px; font-family: var(--font-mono); font-size: 12.5px; display: grid; grid-template-columns: 64px 1fr; gap: 10px; filter: sepia(.2) brightness(.92); }
+  .file .pic { aspect-ratio: 3/4; max-width: 100%; background: linear-gradient(160deg, #8e979a, #d5dada 45%, #7f888c); border: 3px solid #eee8da; }
+  .file b { font-weight: 700; }
+  .file .blank { display: inline-block; min-width: 4.5em; border-bottom: 1px solid var(--ink); }
 
-  /* 第三页：灯 */
-  .lamp-wrap { display: flex; gap: 22px; align-items: center; margin: 10px 0 16px; flex-wrap: wrap; }
-  .lamp {
-    width: 88px; height: 88px; border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #5c554a, #2d2924 70%);
-    box-shadow: inset 0 -6px 12px rgba(0,0,0,.5);
-    transition: background .05s, box-shadow .05s;
-    flex: none;
-  }
-  .lamp.on {
-    background: radial-gradient(circle at 40% 35%, #fff7d6, #f1cf7a 55%, #b8862d);
-    box-shadow: 0 0 30px 8px rgba(241,207,122,.65), 0 0 90px 30px rgba(241,207,122,.25);
-  }
+  /* 底部输入 */
+  .chips { flex: none; display: flex; gap: 8px; padding: 6px 16px 0; flex-wrap: wrap; }
+  .chip { font: inherit; font-size: 13px; background: #1d201e; color: #b9c0b9; border: 1px solid #2f3431; border-radius: 14px; padding: 4px 12px; cursor: pointer; }
+  .chip:hover { background: #262a27; }
+  form.input { flex: none; display: flex; gap: 8px; align-items: center; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); background: var(--bar); border-top: 1px solid var(--line); margin-top: 6px; }
+  form.input input { flex: 1; min-width: 0; font: inherit; font-size: 16px; color: var(--text); background: #232624; border: 0; border-radius: 5px; padding: 8px 10px; }
+  form.input input:disabled { opacity: .5; }
+  .send { font: inherit; font-size: 14px; background: #3d7a4b; color: #eef6ef; border: 0; border-radius: 5px; padding: 8px 14px; cursor: pointer; }
+  .send:disabled { background: #2a3a2e; color: #6f7d71; cursor: default; }
 
-  /* 第五页：镜像 */
-  .mirror {
-    transform: scaleX(-1);
-    background: linear-gradient(135deg, #c9cfd2, #eef1f1 45%, #b8c0c4);
-    color: #2b3337; padding: 20px 22px; border: 6px solid #6d6457;
-    font-size: 17px; line-height: 2;
+  /* 惊吓效果 */
+  .glitch { animation: glitch .45s steps(2) 1; }
+  @keyframes glitch {
+    0% { transform: translate(0); filter: none; }
+    20% { transform: translate(-3px, 1px); filter: hue-rotate(-40deg) contrast(1.6); }
+    40% { transform: translate(3px, -2px); filter: invert(.9); }
+    60% { transform: translate(-2px, 2px); filter: saturate(3) hue-rotate(160deg); }
+    80% { transform: translate(2px, 0); filter: brightness(.3); }
+    100% { transform: none; filter: none; }
   }
-
-  /* 第六页：暗室 */
-  .dark {
-    position: relative; height: 340px; overflow: hidden; background: #cfc6b2;
-    touch-action: none; cursor: none; user-select: none; -webkit-user-select: none;
-    border: 1px solid #8f8570;
-  }
-  .dark span { position: absolute; font-family: var(--font-display); color: #3b2a22; white-space: nowrap; }
-  .dark .shade {
-    position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(circle at var(--x, -200px) var(--y, -200px), transparent 0 46px, rgba(8,7,6,.985) 92px);
-  }
-  .dark .hint-txt { position: absolute; left: 12px; bottom: 8px; font-family: var(--font-mono); font-size: 12px; color: #6b6356; z-index: 2; pointer-events: none; }
-
-  /* 第七页：档案卡 */
-  .file { border: 1px solid #a99f89; padding: 16px 18px; display: grid; grid-template-columns: 110px 1fr; gap: 16px; background: rgba(255,255,255,.18); }
-  .photo { aspect-ratio: 3/4; max-width: 100%; background: linear-gradient(160deg, #aeb5b7, #e6e9e8 40%, #9aa2a6); border: 5px solid #f3eee2; box-shadow: 0 2px 4px rgba(0,0,0,.25); position: relative; }
-  .photo::after { content: "照片"; position: absolute; bottom: 4px; right: 6px; font-size: 11px; color: #56606a; font-family: var(--font-mono); }
-  .field { font-family: var(--font-mono); font-size: 14px; display: grid; gap: 4px; }
-  .field b { font-weight: 700; }
-  .blank { display: inline-block; min-width: 6em; border-bottom: 1px solid var(--ink); }
-  @media (max-width: 460px) { .file { grid-template-columns: 1fr; } .photo { width: 110px; } .log div { grid-template-columns: 1fr; gap: 0; } }
-
-  footer.foot { font-family: var(--font-mono); font-size: 12px; color: var(--dim); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  footer.foot button { background: none; border: 0; color: var(--dim); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
-  .ending p { font-size: 17px; }
+  .blackout { position: absolute; inset: 0; background: #000; z-index: 8; pointer-events: none; opacity: 0; transition: opacity .6s; }
+  .blackout.on { opacity: 1; }
+  .ending-words { font-family: var(--font-hand); font-size: 28px; color: #b52222; align-self: center; text-align: center; line-height: 1.5; padding-block: 8px; }
+  @media (prefers-reduced-motion: reduce) { .glitch, .appear { animation: none; } .blackout { transition: none; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <h1 class="brand">X-C01 残页<small>ARCHIVE·B3</small></h1>
-    <nav class="tabs" id="tabs" aria-label="已找到的页"></nav>
+<div class="app" id="app">
+  <header class="bar">
+    <span aria-hidden="true"></span>
+    <div class="who"><b id="name">林砚</b><span id="status">最后上线 2019-11-07</span></div>
+    <button class="iconbtn" type="button" id="menu-btn" aria-label="聊天设置" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+    </button>
   </header>
-
-  <main id="stage"></main>
-
-  <footer class="foot">
-    <span id="status">档案 7 页 · 每页藏着一个口令</span>
-    <span class="row"><button type="button" id="reset">烧掉所有进度，重新开始</button></span>
-  </footer>
+  <div class="menu" id="menu" hidden>
+    <button type="button" id="sound-btn">提示音：开</button>
+    <button type="button" id="restart-btn" class="danger">清空聊天记录，重新开始</button>
+  </div>
+  <div class="msgs" id="msgs" aria-live="polite"></div>
+  <div class="chips" id="chips"></div>
+  <form class="input" id="form" autocomplete="off">
+    <input id="text" type="text" spellcheck="false" placeholder="回复林砚…" aria-label="输入消息">
+    <button class="send" id="send" type="submit">发送</button>
+  </form>
+  <div class="blackout" id="blackout"></div>
 </div>
 
 <script>
 (function () {
-  // 口令只存散列值，翻源码也看不到答案。
-  function hash(s) {
-    var x = 0x811c9dc5;
-    for (var ch of s) { x ^= ch.codePointAt(0); x = Math.imul(x, 0x01000193) >>> 0; }
-    return x.toString(16);
-  }
-  function norm(s) { return s.trim().toLowerCase().replace(/[\s\-_·.。，,、'"“”]/g, ""); }
+  // 口令只存散列值，翻源码也拿不到答案。
+  function hash(s) { var x = 0x811c9dc5; for (var ch of s) { x ^= ch.codePointAt(0); x = Math.imul(x, 0x01000193) >>> 0; } return x.toString(16); }
+  function norm(s) { return s.trim().toLowerCase().replace(/[\s\-_·.。，,、!！?？'"“”]/g, ""); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
-  var KEY = "xc01-remnants-v1";
-  var state = { unlocked: 1, current: 1, hints: {} };
-  try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved && saved.unlocked) state = saved; } catch (e) {}
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  var STAGES = {
+    1: { ans: ["ec5a0704"], near: {}, hints: ["我刚才发的那四句话，你注意每一句是怎么开头的。", "把那四句的第一个字连起来。"] },
+    2: { ans: ["7b5063e5"], near: {}, hints: ["11-07 那一行不是空的，字和纸是一个颜色。", "用手指长按那一行，或者用鼠标拖过去选中它。"] },
+    3: { ans: ["8e2c27e2"], near: { "cb36196c": "不是求救。它在说一个楼层，两个字符。" }, hints: ["是摩尔斯电码。第一个字符：长、短、短、短。", "第二个字符：短、短、短、长、长。B 是 -...，3 是 ...--"] },
+    4: { ans: ["2fc941c2", "c84003d1"], near: {}, hints: ["每个字母在字母表里往回数四个。Q 就变成 M。", "Q→M，M→I，V→R，S→O。是一个英文单词，写中文也行。"] },
+    5: { ans: ["7e2ef9d6"], near: { "605452b2": "只要月和日，四个数字。" }, hints: ["字是反的，倒过来读。它在问我是哪天不见的。", "你加我的时候，系统提示过我最后一次上线的日期。"] },
+    6: { ans: ["505ecfb6"], near: {}, hints: ["字都写在墙上。四个角落都照一照。", "最大的那几个字在最下面。"] },
+    7: { ans: ["54db92ff", "3de93555", "14a6babc", "1bd15669", "9ac012e4"], near: { "db7567e4": "不是我。你再看看照片，镜子里映出来的是谁？" }, hints: ["照片里映出来的人，手里正拿着手机。", "是你。回答“我”，或者写出档案上的编号。"] }
+  };
 
-  var PAGES = [
-    {
-      id: 1, file: "FILE 01 / 信", stamp: "私人",
-      title: "给读到这封信的人",
-      body:
-        '<p class="note">随信附注：林砚，X-C01 实验室档案员，2019 年 11 月 7 日起失联。</p>' +
-        '<p>门锁换过了。我记得原来那把是铜的，钥匙转两圈才开，现在这一把只要一圈。没人告诉我什么时候换的。</p>' +
-        '<p>后来的事情我不太想写。我只能说，档案室的灯每天夜里十一点零七分会自己亮一次，亮完就灭，像是有人在里面确认什么东西还在。</p>' +
-        '<p>有些档案被重新装订过，页码对不上，纸的颜色也不一样。我把缺的几页找了回来，藏在我能想到的地方。</p>' +
-        '<p>人不会凭空消失。如果你正在读这封信，说明我已经来不及亲手把它们交给你了。</p>' +
-        '<p style="text-align:right">——林砚</p>',
-      prompt: "她想告诉你什么？",
-      answers: ["ec5a0704"],
-      near: {},
-      hints: ["信是分段写的。她好像很在意每段怎么开头。", "把四段的第一个字连起来读。"]
-    },
-    {
-      id: 2, file: "FILE 02 / 实验日志", stamp: "机密",
-      title: "门后：值班日志",
-      body:
-        '<p>门后面是一间没有窗的值班室。桌上摊着一本日志，最后几页的字迹越来越乱。</p>' +
-        '<div class="log typed">' +
-        '<div><time>11-02 22:40</time><span>受试者 C01 情绪稳定。又问起了“她”的名字，按规程未回答。</span></div>' +
-        '<div><time>11-03 23:07</time><span>档案室灯亮，持续约 4 秒。电工称线路无异常。</span></div>' +
-        '<div><time>11-05 01:15</time><span>C01 在墙上写字，内容已擦除。<span class="redact">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span> 主任要求加快第七次重置。</span></div>' +
-        '<div><time>11-06 23:59</time><span>林砚申请调阅 C01 的全部档案。申请被驳回。</span></div>' +
-        '<div><time>11-07 --:--</time><span class="ghost">她把钥匙藏在 0417 号房间。不要让主任知道。</span></div>' +
-        '<div><time>11-07 08:30</time><span>档案员林砚未到岗。</span></div>' +
-        '</div>' +
-        '<p>最后一行之前，好像空了一行。纸上什么都没有，但那一格的纸摸起来比别处粗糙。</p>',
-      prompt: "钥匙在哪个房间？",
-      answers: ["7b5063e5"],
-      near: {},
-      hints: ["11-07 那一行不是空的，只是字和纸一样颜色。", "用鼠标拖过那一行，或在手机上长按选中它。"]
-    },
-    {
-      id: 3, file: "FILE 03 / 0417 号房", stamp: "",
-      title: "0417：一盏不肯熄的灯",
-      body:
-        '<p>0417 号房里没有钥匙。天花板上吊着一盏灯，没有开关，它却一直在闪。</p>' +
-        '<div class="lamp-wrap"><div class="lamp" id="lamp" role="img" aria-label="一盏在闪烁的灯"></div>' +
-        '<p class="note" style="margin:0;flex:1 1 220px">灯下贴着一张便条：<br>“短的是点，长的是划。<br>它说的是你该去的楼层。”</p></div>' +
-        '<p>你数了一会儿，发现它在重复同一段节奏。每段之间会黑很久。</p>',
-      prompt: "灯在说哪一层？",
-      answers: ["8e2c27e2"],
-      near: { "cb36196c": "不是求救信号。它在说一个楼层，两个字符。" },
-      hints: ["这是摩尔斯电码。第一个字符：长、短、短、短。", "第二个字符：短、短、短、长、长。B 是 -...，3 是 ...--。"]
-    },
-    {
-      id: 4, file: "FILE 04 / 地下三层", stamp: "",
-      title: "B3：电梯门内侧的划痕",
-      body:
-        '<p>电梯只到 B3 就不再往下。门一开，走廊的灯一盏接一盏亮起来。</p>' +
-        '<p>电梯门内侧有人用钥匙刻了几个字母，刻得很深：</p>' +
-        '<p class="typed" style="font-size:28px;letter-spacing:.3em;margin:6px 0 10px">QMVVSV</p>' +
-        '<p>下面一行小字：<span class="note">每个字母，都向后退四步。</span></p>' +
-        '<p>走廊尽头是一扇蒙着布的门。</p>',
-      prompt: "刻痕说的是什么？",
-      answers: ["2fc941c2", "c84003d1"],
-      near: {},
-      hints: ["这是凯撒密码。把字母表往回数：Q 往前数四个是 M。", "Q→M，M→I，V→R，S→O。答案是一个英文单词，也可以写成中文。"]
-    },
-    {
-      id: 5, file: "FILE 05 / 镜子", stamp: "",
-      title: "布下面是一面镜子",
-      body:
-        '<p>你掀开布。镜面上有人用口红写了一段话，但从你这一侧看，字全是反的。</p>' +
-        '<div class="mirror"><p style="margin:0">我被困在那一天。</p><p style="margin:0">每一次重置，我都回到那一天的早上。</p><p style="margin:0">告诉我，我是哪一天不见的。</p><p style="margin:0">只要月和日，四个数字。</p></div>' +
-        '<p style="margin-top:14px">镜子里的你，嘴唇好像动了一下。</p>',
-      prompt: "她是哪一天不见的？（四位数字）",
-      answers: ["7e2ef9d6"],
-      near: { "605452b2": "只要月和日，四个数字。" },
-      hints: ["倒过来读镜子上的字。她问的是自己失联的日期。", "第一页的随信附注写着：2019 年 11 月 7 日。"]
-    },
-    {
-      id: 6, file: "FILE 06 / 暗室", stamp: "",
-      title: "镜子后面没有墙",
-      body:
-        '<p>镜子被推开，后面是一间完全没有光的屋子。你只有一支快没电的手电。</p>' +
-        '<div class="dark" id="dark">' +
-        '<span style="left:8%;top:12%;font-size:22px;transform:rotate(-6deg)">别回头</span>' +
-        '<span style="left:58%;top:8%;font-size:16px">第 7 次</span>' +
-        '<span style="left:66%;top:40%;font-size:20px;transform:rotate(4deg)">她没有离开</span>' +
-        '<span style="left:12%;top:52%;font-size:18px">钥匙不在房间里</span>' +
-        '<span style="left:34%;top:78%;font-size:26px;transform:rotate(-2deg)">去 档案柜</span>' +
-        '<span style="left:78%;top:80%;font-size:14px">C01</span>' +
-        '<div class="shade" id="shade"></div>' +
-        '<div class="hint-txt">移动鼠标或手指照亮墙面</div>' +
-        '</div>',
-      prompt: "墙上让你去哪里？",
-      answers: ["505ecfb6"],
-      near: {},
-      hints: ["字都写在墙上，照遍四个角落。", "最大的那几个字在下方。"]
-    },
-    {
-      id: 7, file: "FILE 07 / 最后一份档案", stamp: "绝密",
-      title: "档案柜里只剩一个抽屉",
-      body:
-        '<p>抽屉里只有一份档案。封面上的编号和这间实验室的名字一样。</p>' +
-        '<div class="file">' +
-        '<div class="photo" aria-label="照片：一面镜子"></div>' +
-        '<div class="field">' +
-        '<span><b>编号：</b>X-C01</span>' +
-        '<span><b>姓名：</b><span class="blank">&nbsp;</span>（已按规程抹除）</span>' +
-        '<span><b>入组：</b>2019-11-07</span>' +
-        '<span><b>状态：</b>记忆重置 第 7 次，进行中</span>' +
-        '<span><b>备注：</b>受试者每次重置后都会重新写一封信，<br>并把残页藏在同样的地方。</span>' +
-        '</div></div>' +
-        '<p style="margin-top:14px">照片不是一张人像。那是一面镜子，镜子里映着正在看照片的人。</p>',
-      prompt: "这份档案属于谁？",
-      answers: ["54db92ff", "3de93555", "14a6babc", "1bd15669", "9ac012e4"],
-      near: { "db7567e4": "林砚是写信的人。可照片里映出来的，是谁？" },
-      hints: ["信是写给“读到这封信的人”的。受试者每次重置都会重新写一封信。", "照片里的人就是你。答“我”，或者写出你的编号。"]
-    }
-  ];
+  function L(x) { return { f: "lin", x: x }; }
+  function S(x, red) { return { f: "sys", x: x, red: !!red }; }
+  var SCRIPTS = {
+    s1: [
+      S("23:07"),
+      S("你已添加了「林砚」，现在可以开始聊天了。"),
+      S("该用户最近一次上线：2019年11月7日", true),
+      L("你终于通过了"),
+      L("别问我在哪，我没有多少时间"),
+      L("接下来的四句话，每一句你都要看清楚"),
+      L("门锁换过了，原来那把是铜的，现在这把我打不开"),
+      L("后来档案室的灯每天夜里十一点零七分都会自己亮一次"),
+      L("有人翻过档案室，只拿走了一份档案"),
+      L("人不会凭空消失，除非有人希望他们消失"),
+      L("把我真正想说的话打给我。我不能直接写出来，他会看到")
+    ],
+    ok1: [L("对"), L("门后有人"), { a: "pause", ms: 1200 }, L("他现在还在")],
+    s2: [
+      L("我从门缝里拍到了值班室的桌子"),
+      { f: "lin", card: "log" },
+      L("最后几行被人藏起来了"),
+      { a: "recall", x: "他看见我了" },
+      L("没事。你帮我看看，钥匙在几号房间？")
+    ],
+    ok2: [L("0417"), L("我记得这个房间，在走廊最里面"), L("我现在过去")],
+    s3: [
+      S("23:14"),
+      L("0417 里没有钥匙"),
+      L("只有一盏灯，没有开关，它一直在闪"),
+      { f: "lin", card: "lamp" },
+      L("门上贴了张纸：短的是点，长的是划"),
+      L("它想让我去哪一层？")
+    ],
+    ok3: [
+      L("B3……"),
+      L("可是这栋楼只有地上六层"),
+      { a: "pause", ms: 1400 },
+      { a: "fakeme", x: "别去" },
+      { a: "pause", ms: 1600 },
+      L("？"),
+      L("你为什么让我别去"),
+      { a: "pause", ms: 1200 },
+      L("算了。电梯门开了")
+    ],
+    s4: [
+      S("23:21"),
+      L("电梯只到 B3，再往下的按钮都被撬掉了"),
+      L("电梯门内侧有人用钥匙刻了几个字母"),
+      { f: "lin", big: "QMVVSV" },
+      L("下面还有一行小字：每个字母，都向后退四步"),
+      L("刻的是什么？")
+    ],
+    ok4: [L("镜子"), L("走廊尽头真的有一面镜子，蒙着黑布"), { a: "glitch" }, L("布在动"), L("我掀开了")],
+    s5: [
+      L("镜子上有人用口红写了字"),
+      L("我拍给你，字是反的"),
+      { f: "lin", mirror: "我被困在那一天。\n每一次重置，我都回到那天早上。\n告诉我，我是哪一天不见的。\n只要月和日，四个数字。" },
+      L("是写给我的吗")
+    ],
+    ok5: [L("1107"), L("那天早上我没有去上班"), L("我不记得我去了哪里"), { a: "pause", ms: 1000 }, L("镜子后面是空的"), L("能走进去")],
+    s6: [
+      S("23:48"),
+      L("这里好黑"),
+      L("手机闪光灯只能照亮一小块"),
+      { f: "lin", card: "dark" },
+      L("墙上写满了字，是我的笔迹"),
+      L("可我不记得写过"),
+      L("你帮我找找，它让我去哪？")
+    ],
+    ok6: [
+      L("档案柜只有一个抽屉"),
+      L("里面只有一份档案"),
+      { f: "lin", card: "file" },
+      L("编号和这个实验室的名字一样"),
+      L("照片里不是人，是一面镜子"),
+      L("镜子里映着一个拿着手机的人"),
+      { a: "glitch" },
+      L("这份档案是谁的？")
+    ],
+    s7: [],
+    end: [
+      L("对"),
+      L("是你"),
+      { a: "pause", ms: 1400 },
+      { a: "avatar" },
+      { a: "rename", v: "我" },
+      { a: "status", v: "在线" },
+      L("你一直在跟自己聊天"),
+      L("林砚是你以前的名字。X-C01 是他们后来给你的名字"),
+      L("每次重置之前，你都会给明天醒来的自己发一遍这些消息"),
+      L("然后在下一次醒来的夜里，重新加上这个好友"),
+      S("23:59", true),
+      { a: "recall", x: "他们来了" },
+      { a: "recall", x: "别回头" },
+      { a: "glitch" },
+      S("第 8 次记忆重置将于 00:00 开始", true),
+      { a: "blackout" },
+      S("00:00"),
+      { f: "me", x: "你终于通过了" },
+      { a: "done" }
+    ]
+  };
+  var WRONG = ["不对", "不是这个", "你是不是也看不清了", "快点。他在门外", "不对……灯又亮了"];
+  var IDLE = ["还在吗", "你怎么不说话", "我听到你那边有声音"];
 
-  var stage = document.getElementById("stage");
-  var tabs = document.getElementById("tabs");
-  var status = document.getElementById("status");
-  var lampTimer = null;
+  // 状态
+  var KEY = "xc01-chat-v1";
+  function fresh() { return { stage: 1, hist: [], q: null, hints: {}, idle: {}, ui: { name: "林砚", status: "最后上线 2019-11-07", twisted: false }, done: false }; }
+  var st = fresh();
+  try { var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if (sv && sv.hist) st = sv; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
 
-  function renderTabs() {
-    tabs.innerHTML = "";
-    PAGES.forEach(function (p) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "tab"; b.textContent = String(p.id).padStart(2, "0");
-      b.disabled = p.id > state.unlocked;
-      b.setAttribute("aria-current", String(p.id === state.current));
-      b.setAttribute("aria-label", "第 " + p.id + " 页");
-      b.onclick = function () { state.current = p.id; save(); render(); };
-      tabs.appendChild(b);
-    });
-    if (state.unlocked > 7) {
-      var e = document.createElement("button");
-      e.type = "button"; e.className = "tab"; e.textContent = "终";
-      e.setAttribute("aria-current", String(state.current === 8));
-      e.onclick = function () { state.current = 8; save(); render(); };
-      tabs.appendChild(e);
-    }
+  var app = document.getElementById("app"), msgs = document.getElementById("msgs"), chips = document.getElementById("chips");
+  var form = document.getElementById("form"), input = document.getElementById("text"), sendBtn = document.getElementById("send");
+  var nameEl = document.getElementById("name"), statusEl = document.getElementById("status");
+  var busy = false, idleTimer = null, ghostTimer = null, epoch = 0;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // 重新开始时 epoch 自增，旧的等待会被拒绝，正在播放的脚本随之中止
+  function wait(ms) { var my = epoch; return new Promise(function (r, j) { setTimeout(function () { my === epoch ? r() : j("reset"); }, ms); }); }
+
+  // 提示音（首次操作之后才会响）
+  var ac = null, soundOn = true;
+  try { soundOn = localStorage.getItem(KEY + "-sound") !== "off"; } catch (e) {}
+  function blip(low) {
+    if (!soundOn) return;
+    try {
+      if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === "suspended") ac.resume();
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+      o.type = low ? "sawtooth" : "sine";
+      o.frequency.setValueAtTime(low ? 90 : 880, t); o.frequency.exponentialRampToValueAtTime(low ? 40 : 620, t + (low ? .5 : .09));
+      g.gain.setValueAtTime(low ? .08 : .05, t); g.gain.exponentialRampToValueAtTime(.0001, t + (low ? .55 : .12));
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .6);
+    } catch (e) {}
   }
 
-  function render() {
-    if (lampTimer) { clearTimeout(lampTimer); lampTimer = null; }
-    renderTabs();
-    if (state.current === 8) return renderEnding();
-    var p = PAGES[state.current - 1];
-    var solved = p.id < state.unlocked;
-    var shown = state.hints[p.id] || 0;
-    status.textContent = "第 " + p.id + " 页 / 共 7 页" + (solved ? " · 已解开" : "");
-    stage.innerHTML =
-      '<article class="sheet">' +
-      (p.stamp ? '<div class="stamp">' + p.stamp + '</div>' : '') +
-      '<div class="sheet-head"><span>' + p.file + '</span><span>P.' + String(p.id).padStart(2, "0") + ' / 07</span></div>' +
-      '<h2>' + p.title + '</h2>' + p.body +
-      '<form class="answer" id="form" autocomplete="off">' +
-      '<label for="answer-input">口令 · ' + p.prompt + '</label>' +
-      '<input id="answer-input" name="answer" type="text" spellcheck="false" placeholder="写下你的答案">' +
-      '<button class="btn" type="submit">核对</button>' +
-      '<button class="btn ghostbtn" type="button" id="hint-btn">' + (shown >= p.hints.length ? "没有更多提示" : "要一条提示（" + shown + "/" + p.hints.length + "）") + '</button>' +
-      '</form>' +
-      '<div class="feedback" id="fb" role="status" aria-live="polite">' + (solved ? "这一页你已经解开过了。" : "") + '</div>' +
-      '<div class="hints" id="hints"></div>' +
-      '</article>';
-    if (solved) document.getElementById("fb").classList.add("ok");
-    var hintsEl = document.getElementById("hints");
-    for (var i = 0; i < shown; i++) hintsEl.insertAdjacentHTML("beforeend", "<p>提示 " + (i + 1) + "：" + p.hints[i] + "</p>");
+  function applyUI() {
+    nameEl.textContent = st.ui.name;
+    statusEl.textContent = st.ui.status; statusEl.className = "";
+    app.classList.toggle("twisted", !!st.ui.twisted);
+    input.placeholder = st.ui.twisted ? "回复自己…" : "回复林砚…";
+  }
 
-    document.getElementById("hint-btn").onclick = function () {
-      var n = state.hints[p.id] || 0;
-      if (n >= p.hints.length) return;
-      state.hints[p.id] = n + 1; save(); render();
-    };
-    document.getElementById("form").onsubmit = function (ev) {
-      ev.preventDefault();
-      var v = norm(document.getElementById("answer-input").value);
-      var fb = document.getElementById("fb");
-      if (!v) { fb.className = "feedback"; fb.textContent = "你什么都没写。"; return; }
-      var h = hash(v);
-      if (p.answers.indexOf(h) !== -1) {
-        fb.className = "feedback ok"; fb.textContent = "纸页边缘发出轻微的撕裂声。下一页出现了。";
-        if (state.unlocked <= p.id) state.unlocked = p.id + 1;
-        setTimeout(function () { state.current = p.id + 1; save(); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 900);
-        save();
-      } else if (p.near[h]) {
-        fb.className = "feedback"; fb.textContent = p.near[h];
+  function card(kind) {
+    if (kind === "log") return '<div class="photo-log">' +
+      '<div><time>11-02 22:40</time><span>受试者 C01 又问起“她”的名字。按规程未回答。</span></div>' +
+      '<div><time>11-03 23:07</time><span>档案室灯亮约 4 秒。线路无异常。</span></div>' +
+      '<div><time>11-05 01:15</time><span>C01 在墙上写字，已擦除。<span class="redact">&#9608;&#9608;&#9608;&#9608;</span> 要求加快第七次重置。</span></div>' +
+      '<div><time>11-06 23:59</time><span>林砚申请调阅 C01 档案，驳回。</span></div>' +
+      '<div><time>11-07 --:--</time><span class="ghost">她把钥匙藏在 0417 号房间。不要让主任知道。</span></div>' +
+      '<div><time>11-07 08:30</time><span>档案员林砚未到岗。</span></div></div><div class="cap">照片 · 值班日志</div>';
+    if (kind === "lamp") return '<div class="video" role="img" aria-label="视频：一盏在闪烁的灯"><span class="rec">● REC</span><div class="lamp"></div><span class="ts">00:13 循环</span></div><div class="cap">视频 · 0417 号房</div>';
+    if (kind === "dark") return '<div class="dark">' +
+      '<i style="left:6%;top:8%;font-size:22px;transform:rotate(-7deg)">别回头</i>' +
+      '<i style="left:60%;top:6%;font-size:15px">第 7 次</i>' +
+      '<i style="left:52%;top:36%;font-size:19px;transform:rotate(5deg)">她没有离开</i>' +
+      '<i style="left:8%;top:48%;font-size:16px">钥匙不在房间里</i>' +
+      '<i style="left:24%;top:74%;font-size:28px;transform:rotate(-3deg)">去 档案柜</i>' +
+      '<i style="left:80%;top:80%;font-size:13px">C01</i>' +
+      '<div class="shade"></div><span class="tip">在照片上移动鼠标或手指</span></div><div class="cap">照片 · 已调暗</div>';
+    if (kind === "file") return '<div class="file"><div class="pic" aria-label="照片：一面镜子"></div><div>' +
+      '<div><b>编号</b> X-C01</div><div><b>姓名</b> <span class="blank">&nbsp;</span></div>' +
+      '<div><b>入组</b> 2019-11-07</div><div><b>状态</b> 记忆重置第 7 次</div>' +
+      '<div><b>备注</b> 受试者每次重置前会给自己留言</div></div></div><div class="cap">照片 · 档案封面</div>';
+    return "";
+  }
+
+  function render(m, animate) {
+    var el = document.createElement("div");
+    if (m.f === "sys") { el.className = "sys" + (m.red ? " red" : ""); el.textContent = m.x; }
+    else if (m.f === "end") { el.className = "ending-words"; el.textContent = m.x; }
+    else {
+      el.className = "row " + (m.f === "me" ? "me" : "lin");
+      var ava = '<div class="ava ' + (m.f === "me" ? "me" : "lin") + '" aria-hidden="true">' + (m.f === "me" ? "我" : "<span>林</span>") + '</div>';
+      var b;
+      if (m.card) b = '<div class="bubble card">' + card(m.card) + '</div>';
+      else if (m.big) b = '<div class="bubble big">' + esc(m.big) + '</div>';
+      else if (m.mirror) b = '<div class="bubble mirror"><span>' + esc(m.mirror) + '</span></div>';
+      else b = '<div class="bubble">' + esc(m.x) + '</div>';
+      el.innerHTML = ava + b;
+    }
+    if (animate && !reduce) el.classList.add("appear");
+    msgs.appendChild(el);
+    msgs.scrollTop = msgs.scrollHeight;
+    return el;
+  }
+  function push(m) { st.hist.push(m); save(); return render(m, true); }
+
+  function setTyping(on) {
+    statusEl.textContent = on ? "对方正在输入…" : st.ui.status;
+    statusEl.className = on ? "typing" : "";
+  }
+  async function linSays(m) {
+    var len = (m.x || m.big || m.mirror || "").length;
+    setTyping(true);
+    await wait(m.card ? 1500 : Math.min(2300, 450 + len * 55));
+    setTyping(false);
+    push(m); blip();
+  }
+
+  async function perform(m) {
+    if (m.a === "pause") return wait(m.ms);
+    if (m.a === "glitch") { if (!reduce) { app.classList.remove("glitch"); void app.offsetWidth; app.classList.add("glitch"); } blip(true); return wait(600); }
+    if (m.a === "rename") { st.ui.name = m.v; applyUI(); return wait(500); }
+    if (m.a === "status") { st.ui.status = m.v; applyUI(); return wait(300); }
+    if (m.a === "avatar") { st.ui.twisted = true; applyUI(); blip(true); return wait(900); }
+    if (m.a === "recall") {
+      setTyping(true); await wait(700); setTyping(false);
+      var tmp = render({ f: "lin", x: m.x }, true); blip();
+      await wait(1100);
+      tmp.remove();
+      push(S("「" + st.ui.name + "」撤回了一条消息"));
+      return wait(500);
+    }
+    if (m.a === "fakeme") { await wait(300); push({ f: "me", x: m.x }); return; }
+    if (m.a === "blackout") { var bo = document.getElementById("blackout"); bo.classList.add("on"); blip(true); await wait(1800); bo.classList.remove("on"); return wait(700); }
+    if (m.a === "done") { st.done = true; save(); await wait(900); push({ f: "end", x: "欢迎回来。" }); return; }
+    if (m.f === "sys") { await wait(350); push(m); return; }
+    if (m.f === "me") { await wait(400); push(m); return; }
+    return linSays(m);
+  }
+
+  function lock(on) { busy = on; input.disabled = on || st.done; sendBtn.disabled = on || st.done; renderChips(); }
+  function renderChips() {
+    chips.innerHTML = "";
+    if (st.done) { addChip("再聊一次", restart); return; }
+    if (!busy) addChip("我看不懂", function () { send("我看不懂"); });
+  }
+  function addChip(label, fn) { var c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = label; c.onclick = fn; chips.appendChild(c); }
+
+  // 按脚本逐条发消息；进度随时存档，刷新后从中断处继续
+  function play(key) { st.q = { key: key, pos: 0 }; save(); return run(); }
+  async function run() {
+    clearTimers(); lock(true);
+    try {
+      var list = SCRIPTS[st.q.key];
+      while (st.q.pos < list.length) { await perform(list[st.q.pos]); st.q.pos++; save(); }
+    } catch (e) { if (e !== "reset") console.error(e); return; }
+    var key = st.q.key; st.q = null; save();
+    if (key.indexOf("ok") === 0) {
+      var n = +key.slice(2); st.stage = n + 1; save();
+      return play("s" + (n + 1));
+    }
+    lock(false);
+    if (key === "end") return;
+    armTimers();
+    if (!(window.matchMedia && matchMedia("(pointer: coarse)").matches)) input.focus();
+  }
+
+  function clearTimers() { clearTimeout(idleTimer); clearTimeout(ghostTimer); }
+  function armTimers() {
+    clearTimers();
+    var my = epoch, stage = st.stage;
+    // 对方“正在输入”，却什么也没发
+    ghostTimer = setTimeout(function () {
+      if (busy || my !== epoch) return;
+      setTyping(true); setTimeout(function () { if (!busy && my === epoch) setTyping(false); }, 2600);
+    }, 22000);
+    if (!st.idle[stage]) idleTimer = setTimeout(function () {
+      if (busy || my !== epoch) return;
+      st.idle[stage] = true; lock(true);
+      linSays(L(IDLE[stage % IDLE.length])).then(function () { lock(false); }, function () {});
+    }, 50000);
+  }
+
+  async function send(text) {
+    if (busy || st.done || st.q) return;
+    text = text.trim(); if (!text) return;
+    clearTimers();
+    push({ f: "me", x: text });
+    var v = norm(text), stg = STAGES[st.stage], h = hash(v);
+    lock(true);
+    try {
+      await wait(500);
+      if (stg.ans.indexOf(h) !== -1) return play(st.stage < 7 ? "ok" + st.stage : "end");
+      if (/^(提示|看不懂|我看不懂|不懂|帮帮我|help|hint)$/.test(v)) {
+        var n = st.hints[st.stage] || 0;
+        if (n < stg.hints.length) { st.hints[st.stage] = n + 1; save(); await linSays(L(stg.hints[n])); }
+        else await linSays(L("我也只知道这么多了……"));
+      } else if (stg.near[h]) {
+        await linSays(L(stg.near[h]));
       } else {
-        var lines = ["不对。屋子里好像有人轻轻笑了一声。", "不对。纸上的字没有任何变化。", "不对。你听见走廊里有脚步声，又停了。"];
-        fb.className = "feedback"; fb.textContent = lines[Math.floor(Math.random() * lines.length)];
+        await linSays(L(WRONG[Math.floor(Math.random() * WRONG.length)]));
       }
-    };
-
-    if (p.id === 3) startLamp();
-    if (p.id === 6) startTorch();
+    } catch (e) { return; }
+    lock(false); armTimers();
   }
 
-  // 摩尔斯：B3 = -... ...--，单位 280ms
-  function startLamp() {
-    var lamp = document.getElementById("lamp");
+  form.addEventListener("submit", function (e) { e.preventDefault(); var t = input.value; input.value = ""; send(t); });
+
+  // 灯：B3 = -... ...--，单位 280ms，所有视频卡共用一个节拍
+  (function lampLoop() {
     var U = 280, seq = [];
     function sym(code) { code.split("").forEach(function (c, i) { if (i) seq.push([0, 1]); seq.push([1, c === "-" ? 3 : 1]); }); }
     sym("-..."); seq.push([0, 3]); sym("...--"); seq.push([0, 9]);
     var i = 0;
     (function step() {
-      if (!document.body.contains(lamp)) return;
-      var s = seq[i % seq.length];
-      lamp.classList.toggle("on", s[0] === 1);
-      i++;
-      lampTimer = setTimeout(step, s[1] * U);
+      var s = seq[i % seq.length]; i++;
+      var lamps = document.querySelectorAll(".lamp");
+      for (var k = 0; k < lamps.length; k++) lamps[k].classList.toggle("on", s[0] === 1);
+      setTimeout(step, s[1] * U);
     })();
+  })();
+
+  // 暗室手电
+  function torch(e) {
+    var d = e.target.closest && e.target.closest(".dark"); if (!d) return;
+    var r = d.getBoundingClientRect(), sh = d.querySelector(".shade");
+    sh.style.setProperty("--x", (e.clientX - r.left) + "px"); sh.style.setProperty("--y", (e.clientY - r.top) + "px");
   }
+  msgs.addEventListener("pointermove", torch);
+  msgs.addEventListener("pointerdown", torch);
 
-  function startTorch() {
-    var box = document.getElementById("dark"), shade = document.getElementById("shade");
-    function move(ev) {
-      var r = box.getBoundingClientRect();
-      shade.style.setProperty("--x", (ev.clientX - r.left) + "px");
-      shade.style.setProperty("--y", (ev.clientY - r.top) + "px");
-    }
-    box.addEventListener("pointermove", move);
-    box.addEventListener("pointerdown", move);
-    box.addEventListener("pointerleave", function () { shade.style.setProperty("--x", "-200px"); shade.style.setProperty("--y", "-200px"); });
-  }
-
-  function renderEnding() {
-    status.textContent = "档案已归还";
-    stage.innerHTML =
-      '<article class="sheet ending">' +
-      '<div class="stamp">归档</div>' +
-      '<div class="sheet-head"><span>FILE 08 / 结案</span><span>P.终</span></div>' +
-      '<h2>镜子里的人是你</h2>' +
-      '<p>你合上档案。纸页边缘有你自己的指纹，每一页都有，颜色深浅不一，像是被翻过很多很多次。</p>' +
-      '<p>那封信是你写的。林砚是你曾经的名字，X-C01 是他们后来给你的名字。每一次重置之前，你都会把真相拆成七页，藏进这栋楼里，然后在下一次醒来的早上，重新找到它们。</p>' +
-      '<p>十一点零七分，档案室的灯亮了。你终于明白，那不是有人在确认档案还在，是有人在确认 <b>你</b> 还在。</p>' +
-      '<p class="note">系统通知：第 8 次记忆重置将于 00:00 开始。</p>' +
-      '<div class="row" style="margin-top:18px">' +
-      '<button class="btn" type="button" id="again">把信重新写一遍</button>' +
-      '<button class="btn ghostbtn" type="button" id="back">回到第 7 页</button>' +
-      '</div>' +
-      '</article>';
-    document.getElementById("again").onclick = restart;
-    document.getElementById("back").onclick = function () { state.current = 7; save(); render(); };
-  }
-
-  function restart() { state = { unlocked: 1, current: 1, hints: {} }; save(); render(); window.scrollTo({ top: 0 }); }
-
-  var resetBtn = document.getElementById("reset"), armed = false;
-  resetBtn.onclick = function () {
-    if (!armed) { armed = true; resetBtn.textContent = "再点一次确认：所有进度都会消失"; setTimeout(function () { armed = false; resetBtn.textContent = "烧掉所有进度，重新开始"; }, 4000); return; }
-    armed = false; resetBtn.textContent = "烧掉所有进度，重新开始"; restart();
+  // 菜单
+  var menu = document.getElementById("menu"), menuBtn = document.getElementById("menu-btn");
+  var soundBtn = document.getElementById("sound-btn"), restartBtn = document.getElementById("restart-btn"), armed = false;
+  function setMenu(open) { menu.hidden = !open; menuBtn.setAttribute("aria-expanded", String(open)); if (!open) { armed = false; restartBtn.textContent = "清空聊天记录，重新开始"; } }
+  menuBtn.onclick = function (e) { e.stopPropagation(); setMenu(menu.hidden); };
+  document.addEventListener("click", function (e) { if (!menu.hidden && !menu.contains(e.target)) setMenu(false); });
+  soundBtn.textContent = "提示音：" + (soundOn ? "开" : "关");
+  soundBtn.onclick = function () { soundOn = !soundOn; soundBtn.textContent = "提示音：" + (soundOn ? "开" : "关"); try { localStorage.setItem(KEY + "-sound", soundOn ? "on" : "off"); } catch (e) {} };
+  restartBtn.onclick = function () {
+    if (!armed) { armed = true; restartBtn.textContent = "再点一次：记录会全部消失"; return; }
+    setMenu(false); restart();
   };
 
-  console.log("%c你在找什么？答案不在这里。但她确实来过。", "color:#9a2f27;font-size:14px");
-  render();
+  function restart() {
+    epoch++; clearTimers();
+    st = fresh(); save();
+    msgs.innerHTML = ""; applyUI(); setTyping(false);
+    busy = false;
+    play("s1");
+  }
+
+  // 启动：先还原聊天记录，再从中断的地方接着播
+  applyUI();
+  st.hist.forEach(function (m) { render(m, false); });
+  if (st.q) run();
+  else if (!st.hist.length) play("s1");
+  else { lock(false); if (!st.done) armTimers(); }
+
+  console.log("%c她不在这里。你为什么要看这里？", "color:#a31d1d;font-size:14px");
 })();
 </script>
 </body>
