@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>X-C01 残页</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;600&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+  /* 单一视觉：深色书桌 + 旧纸档案。刻意只做一套主题。 */
+  :root {
+    color-scheme: dark;
+    --desk: #1d1b18;
+    --desk-edge: #2b2823;
+    --paper: #ddd5c4;
+    --paper-shade: #cfc5b0;
+    --ink: #2a2520;
+    --ink-soft: #5f574c;
+    --carbon: #34506b;
+    --stamp: #9a2f27;
+    --dim: #8c8475;
+    --font-display: "ZCOOL XiaoWei", "Songti SC", "STSong", serif;
+    --font-body: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    background: radial-gradient(120% 80% at 50% 0%, var(--desk-edge), var(--desk) 60%);
+    background-color: var(--desk);
+    color: var(--paper);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.8;
+    padding-inline: 16px;
+    padding-block: 28px 56px;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+  header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--font-display); font-size: 28px; letter-spacing: .08em; color: var(--paper); margin: 0; }
+  .brand small { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--dim); margin-left: 10px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab {
+    font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums;
+    width: 30px; height: 26px; display: grid; place-items: center;
+    border: 1px solid #4a453d; color: var(--dim); background: transparent; border-radius: 3px 3px 0 0;
+    cursor: pointer; padding: 0;
+  }
+  .tab[aria-current="true"] { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+  .tab:disabled { opacity: .35; cursor: not-allowed; }
+  .tab:focus-visible, button:focus-visible, input:focus-visible { outline: 2px dashed #b9ad93; outline-offset: 2px; }
+
+  /* 纸页 */
+  .sheet {
+    position: relative;
+    background:
+      repeating-linear-gradient(0deg, rgba(60,50,35,.035) 0 1px, transparent 1px 4px),
+      var(--paper);
+    color: var(--ink);
+    padding: 34px clamp(18px, 5vw, 44px) 30px;
+    box-shadow: 0 1px 0 var(--paper-shade), 0 18px 40px rgba(0,0,0,.55);
+    transform: rotate(-.35deg);
+    animation: slidein .5s ease-out;
+  }
+  @keyframes slidein { from { transform: translateY(8px) rotate(-.35deg); opacity: .6; } }
+  @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+  .sheet-head {
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--ink-soft);
+    border-bottom: 1px solid #b7ad98; padding-bottom: 8px; margin-bottom: 18px;
+    font-variant-numeric: tabular-nums;
+  }
+  .sheet h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(26px, 6vw, 34px); line-height: 1.3; margin: 0 0 14px; padding-right: 88px; text-wrap: balance; letter-spacing: .04em; }
+  .sheet p { margin: 0 0 12px; max-width: 36em; }
+  .stamp {
+    position: absolute; right: 18px; top: 64px;
+    font-family: var(--font-display); font-size: 22px; color: var(--stamp);
+    border: 3px double var(--stamp); padding: 0 10px; transform: rotate(8deg); opacity: .75;
+    letter-spacing: .2em; pointer-events: none;
+  }
+  .note { font-family: var(--font-mono); color: var(--carbon); font-size: 14px; }
+  .typed { font-family: var(--font-mono); font-size: 15px; line-height: 1.9; }
+  .redact { background: var(--ink); color: var(--ink); padding: 0 .2em; border-radius: 1px; }
+  .log { display: grid; gap: 2px; margin: 0 0 12px; }
+  .log div { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; }
+  .log time { font-family: var(--font-mono); color: var(--ink-soft); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .ghost { color: var(--paper); }                /* 与纸同色：只有被选中时才看得见 */
+  .ghost::selection, .ghost *::selection { background: var(--stamp); color: #fff4e6; }
+  .sheet ::selection { background: #b9ad93; color: var(--ink); }
+  .sheet .ghost::selection { background: var(--stamp); color: #fff4e6; }
+
+  /* 表单 */
+  form.answer { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 22px; padding-top: 16px; border-top: 1px dashed #b7ad98; }
+  form.answer label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--ink-soft); width: 100%; }
+  form.answer input {
+    flex: 1 1 200px; min-width: 0;
+    font-family: var(--font-mono); font-size: 18px; color: var(--ink);
+    background: transparent; border: 0; border-bottom: 2px solid var(--ink); padding: 4px 2px;
+  }
+  .btn {
+    font-family: var(--font-body); font-size: 15px; cursor: pointer;
+    background: var(--ink); color: var(--paper); border: 0; padding: 8px 18px; border-radius: 2px;
+  }
+  .btn.ghostbtn { background: transparent; color: var(--ink-soft); border: 1px solid #a99f89; }
+  .feedback { min-height: 1.8em; font-family: var(--font-mono); font-size: 14px; margin-top: 8px; color: var(--stamp); }
+  .feedback.ok { color: var(--carbon); }
+  .hints { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  .hints p { font-size: 14px; color: var(--carbon); margin: 0; font-family: var(--font-mono); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* 第三页：灯 */
+  .lamp-wrap { display: flex; gap: 22px; align-items: center; margin: 10px 0 16px; flex-wrap: wrap; }
+  .lamp {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #5c554a, #2d2924 70%);
+    box-shadow: inset 0 -6px 12px rgba(0,0,0,.5);
+    transition: background .05s, box-shadow .05s;
+    flex: none;
+  }
+  .lamp.on {
+    background: radial-gradient(circle at 40% 35%, #fff7d6, #f1cf7a 55%, #b8862d);
+    box-shadow: 0 0 30px 8px rgba(241,207,122,.65), 0 0 90px 30px rgba(241,207,122,.25);
+  }
+
+  /* 第五页：镜像 */
+  .mirror {
+    transform: scaleX(-1);
+    background: linear-gradient(135deg, #c9cfd2, #eef1f1 45%, #b8c0c4);
+    color: #2b3337; padding: 20px 22px; border: 6px solid #6d6457;
+    font-size: 17px; line-height: 2;
+  }
+
+  /* 第六页：暗室 */
+  .dark {
+    position: relative; height: 340px; overflow: hidden; background: #cfc6b2;
+    touch-action: none; cursor: none; user-select: none; -webkit-user-select: none;
+    border: 1px solid #8f8570;
+  }
+  .dark span { position: absolute; font-family: var(--font-display); color: #3b2a22; white-space: nowrap; }
+  .dark .shade {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at var(--x, -200px) var(--y, -200px), transparent 0 46px, rgba(8,7,6,.985) 92px);
+  }
+  .dark .hint-txt { position: absolute; left: 12px; bottom: 8px; font-family: var(--font-mono); font-size: 12px; color: #6b6356; z-index: 2; pointer-events: none; }
+
+  /* 第七页：档案卡 */
+  .file { border: 1px solid #a99f89; padding: 16px 18px; display: grid; grid-template-columns: 110px 1fr; gap: 16px; background: rgba(255,255,255,.18); }
+  .photo { aspect-ratio: 3/4; max-width: 100%; background: linear-gradient(160deg, #aeb5b7, #e6e9e8 40%, #9aa2a6); border: 5px solid #f3eee2; box-shadow: 0 2px 4px rgba(0,0,0,.25); position: relative; }
+  .photo::after { content: "照片"; position: absolute; bottom: 4px; right: 6px; font-size: 11px; color: #56606a; font-family: var(--font-mono); }
+  .field { font-family: var(--font-mono); font-size: 14px; display: grid; gap: 4px; }
+  .field b { font-weight: 700; }
+  .blank { display: inline-block; min-width: 6em; border-bottom: 1px solid var(--ink); }
+  @media (max-width: 460px) { .file { grid-template-columns: 1fr; } .photo { width: 110px; } .log div { grid-template-columns: 1fr; gap: 0; } }
+
+  footer.foot { font-family: var(--font-mono); font-size: 12px; color: var(--dim); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  footer.foot button { background: none; border: 0; color: var(--dim); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+  .ending p { font-size: 17px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 class="brand">X-C01 残页<small>ARCHIVE·B3</small></h1>
+    <nav class="tabs" id="tabs" aria-label="已找到的页"></nav>
+  </header>
+
+  <main id="stage"></main>
+
+  <footer class="foot">
+    <span id="status">档案 7 页 · 每页藏着一个口令</span>
+    <span class="row"><button type="button" id="reset">烧掉所有进度，重新开始</button></span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  // 口令只存散列值，翻源码也看不到答案。
+  function hash(s) {
+    var x = 0x811c9dc5;
+    for (var ch of s) { x ^= ch.codePointAt(0); x = Math.imul(x, 0x01000193) >>> 0; }
+    return x.toString(16);
+  }
+  function norm(s) { return s.trim().toLowerCase().replace(/[\s\-_·.。，,、'"“”]/g, ""); }
+
+  var KEY = "xc01-remnants-v1";
+  var state = { unlocked: 1, current: 1, hints: {} };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved && saved.unlocked) state = saved; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var PAGES = [
+    {
+      id: 1, file: "FILE 01 / 信", stamp: "私人",
+      title: "给读到这封信的人",
+      body:
+        '<p class="note">随信附注：林砚，X-C01 实验室档案员，2019 年 11 月 7 日起失联。</p>' +
+        '<p>门锁换过了。我记得原来那把是铜的，钥匙转两圈才开，现在这一把只要一圈。没人告诉我什么时候换的。</p>' +
+        '<p>后来的事情我不太想写。我只能说，档案室的灯每天夜里十一点零七分会自己亮一次，亮完就灭，像是有人在里面确认什么东西还在。</p>' +
+        '<p>有些档案被重新装订过，页码对不上，纸的颜色也不一样。我把缺的几页找了回来，藏在我能想到的地方。</p>' +
+        '<p>人不会凭空消失。如果你正在读这封信，说明我已经来不及亲手把它们交给你了。</p>' +
+        '<p style="text-align:right">——林砚</p>',
+      prompt: "她想告诉你什么？",
+      answers: ["ec5a0704"],
+      near: {},
+      hints: ["信是分段写的。她好像很在意每段怎么开头。", "把四段的第一个字连起来读。"]
+    },
+    {
+      id: 2, file: "FILE 02 / 实验日志", stamp: "机密",
+      title: "门后：值班日志",
+      body:
+        '<p>门后面是一间没有窗的值班室。桌上摊着一本日志，最后几页的字迹越来越乱。</p>' +
+        '<div class="log typed">' +
+        '<div><time>11-02 22:40</time><span>受试者 C01 情绪稳定。又问起了“她”的名字，按规程未回答。</span></div>' +
+        '<div><time>11-03 23:07</time><span>档案室灯亮，持续约 4 秒。电工称线路无异常。</span></div>' +
+        '<div><time>11-05 01:15</time><span>C01 在墙上写字，内容已擦除。<span class="redact">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span> 主任要求加快第七次重置。</span></div>' +
+        '<div><time>11-06 23:59</time><span>林砚申请调阅 C01 的全部档案。申请被驳回。</span></div>' +
+        '<div><time>11-07 --:--</time><span class="ghost">她把钥匙藏在 0417 号房间。不要让主任知道。</span></div>' +
+        '<div><time>11-07 08:30</time><span>档案员林砚未到岗。</span></div>' +
+        '</div>' +
+        '<p>最后一行之前，好像空了一行。纸上什么都没有，但那一格的纸摸起来比别处粗糙。</p>',
+      prompt: "钥匙在哪个房间？",
+      answers: ["7b5063e5"],
+      near: {},
+      hints: ["11-07 那一行不是空的，只是字和纸一样颜色。", "用鼠标拖过那一行，或在手机上长按选中它。"]
+    },
+    {
+      id: 3, file: "FILE 03 / 0417 号房", stamp: "",
+      title: "0417：一盏不肯熄的灯",
+      body:
+        '<p>0417 号房里没有钥匙。天花板上吊着一盏灯，没有开关，它却一直在闪。</p>' +
+        '<div class="lamp-wrap"><div class="lamp" id="lamp" role="img" aria-label="一盏在闪烁的灯"></div>' +
+        '<p class="note" style="margin:0;flex:1 1 220px">灯下贴着一张便条：<br>“短的是点，长的是划。<br>它说的是你该去的楼层。”</p></div>' +
+        '<p>你数了一会儿，发现它在重复同一段节奏。每段之间会黑很久。</p>',
+      prompt: "灯在说哪一层？",
+      answers: ["8e2c27e2"],
+      near: { "cb36196c": "不是求救信号。它在说一个楼层，两个字符。" },
+      hints: ["这是摩尔斯电码。第一个字符：长、短、短、短。", "第二个字符：短、短、短、长、长。B 是 -...，3 是 ...--。"]
+    },
+    {
+      id: 4, file: "FILE 04 / 地下三层", stamp: "",
+      title: "B3：电梯门内侧的划痕",
+      body:
+        '<p>电梯只到 B3 就不再往下。门一开，走廊的灯一盏接一盏亮起来。</p>' +
+        '<p>电梯门内侧有人用钥匙刻了几个字母，刻得很深：</p>' +
+        '<p class="typed" style="font-size:28px;letter-spacing:.3em;margin:6px 0 10px">QMVVSV</p>' +
+        '<p>下面一行小字：<span class="note">每个字母，都向后退四步。</span></p>' +
+        '<p>走廊尽头是一扇蒙着布的门。</p>',
+      prompt: "刻痕说的是什么？",
+      answers: ["2fc941c2", "c84003d1"],
+      near: {},
+      hints: ["这是凯撒密码。把字母表往回数：Q 往前数四个是 M。", "Q→M，M→I，V→R，S→O。答案是一个英文单词，也可以写成中文。"]
+    },
+    {
+      id: 5, file: "FILE 05 / 镜子", stamp: "",
+      title: "布下面是一面镜子",
+      body:
+        '<p>你掀开布。镜面上有人用口红写了一段话，但从你这一侧看，字全是反的。</p>' +
+        '<div class="mirror"><p style="margin:0">我被困在那一天。</p><p style="margin:0">每一次重置，我都回到那一天的早上。</p><p style="margin:0">告诉我，我是哪一天不见的。</p><p style="margin:0">只要月和日，四个数字。</p></div>' +
+        '<p style="margin-top:14px">镜子里的你，嘴唇好像动了一下。</p>',
+      prompt: "她是哪一天不见的？（四位数字）",
+      answers: ["7e2ef9d6"],
+      near: { "605452b2": "只要月和日，四个数字。" },
+      hints: ["倒过来读镜子上的字。她问的是自己失联的日期。", "第一页的随信附注写着：2019 年 11 月 7 日。"]
+    },
+    {
+      id: 6, file: "FILE 06 / 暗室", stamp: "",
+      title: "镜子后面没有墙",
+      body:
+        '<p>镜子被推开，后面是一间完全没有光的屋子。你只有一支快没电的手电。</p>' +
+        '<div class="dark" id="dark">' +
+        '<span style="left:8%;top:12%;font-size:22px;transform:rotate(-6deg)">别回头</span>' +
+        '<span style="left:58%;top:8%;font-size:16px">第 7 次</span>' +
+        '<span style="left:66%;top:40%;font-size:20px;transform:rotate(4deg)">她没有离开</span>' +
+        '<span style="left:12%;top:52%;font-size:18px">钥匙不在房间里</span>' +
+        '<span style="left:34%;top:78%;font-size:26px;transform:rotate(-2deg)">去 档案柜</span>' +
+        '<span style="left:78%;top:80%;font-size:14px">C01</span>' +
+        '<div class="shade" id="shade"></div>' +
+        '<div class="hint-txt">移动鼠标或手指照亮墙面</div>' +
+        '</div>',
+      prompt: "墙上让你去哪里？",
+      answers: ["505ecfb6"],
+      near: {},
+      hints: ["字都写在墙上，照遍四个角落。", "最大的那几个字在下方。"]
+    },
+    {
+      id: 7, file: "FILE 07 / 最后一份档案", stamp: "绝密",
+      title: "档案柜里只剩一个抽屉",
+      body:
+        '<p>抽屉里只有一份档案。封面上的编号和这间实验室的名字一样。</p>' +
+        '<div class="file">' +
+        '<div class="photo" aria-label="照片：一面镜子"></div>' +
+        '<div class="field">' +
+        '<span><b>编号：</b>X-C01</span>' +
+        '<span><b>姓名：</b><span class="blank">&nbsp;</span>（已按规程抹除）</span>' +
+        '<span><b>入组：</b>2019-11-07</span>' +
+        '<span><b>状态：</b>记忆重置 第 7 次，进行中</span>' +
+        '<span><b>备注：</b>受试者每次重置后都会重新写一封信，<br>并把残页藏在同样的地方。</span>' +
+        '</div></div>' +
+        '<p style="margin-top:14px">照片不是一张人像。那是一面镜子，镜子里映着正在看照片的人。</p>',
+      prompt: "这份档案属于谁？",
+      answers: ["54db92ff", "3de93555", "14a6babc", "1bd15669", "9ac012e4"],
+      near: { "db7567e4": "林砚是写信的人。可照片里映出来的，是谁？" },
+      hints: ["信是写给“读到这封信的人”的。受试者每次重置都会重新写一封信。", "照片里的人就是你。答“我”，或者写出你的编号。"]
+    }
+  ];
+
+  var stage = document.getElementById("stage");
+  var tabs = document.getElementById("tabs");
+  var status = document.getElementById("status");
+  var lampTimer = null;
+
+  function renderTabs() {
+    tabs.innerHTML = "";
+    PAGES.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "tab"; b.textContent = String(p.id).padStart(2, "0");
+      b.disabled = p.id > state.unlocked;
+      b.setAttribute("aria-current", String(p.id === state.current));
+      b.setAttribute("aria-label", "第 " + p.id + " 页");
+      b.onclick = function () { state.current = p.id; save(); render(); };
+      tabs.appendChild(b);
+    });
+    if (state.unlocked > 7) {
+      var e = document.createElement("button");
+      e.type = "button"; e.className = "tab"; e.textContent = "终";
+      e.setAttribute("aria-current", String(state.current === 8));
+      e.onclick = function () { state.current = 8; save(); render(); };
+      tabs.appendChild(e);
+    }
+  }
+
+  function render() {
+    if (lampTimer) { clearTimeout(lampTimer); lampTimer = null; }
+    renderTabs();
+    if (state.current === 8) return renderEnding();
+    var p = PAGES[state.current - 1];
+    var solved = p.id < state.unlocked;
+    var shown = state.hints[p.id] || 0;
+    status.textContent = "第 " + p.id + " 页 / 共 7 页" + (solved ? " · 已解开" : "");
+    stage.innerHTML =
+      '<article class="sheet">' +
+      (p.stamp ? '<div class="stamp">' + p.stamp + '</div>' : '') +
+      '<div class="sheet-head"><span>' + p.file + '</span><span>P.' + String(p.id).padStart(2, "0") + ' / 07</span></div>' +
+      '<h2>' + p.title + '</h2>' + p.body +
+      '<form class="answer" id="form" autocomplete="off">' +
+      '<label for="answer-input">口令 · ' + p.prompt + '</label>' +
+      '<input id="answer-input" name="answer" type="text" spellcheck="false" placeholder="写下你的答案">' +
+      '<button class="btn" type="submit">核对</button>' +
+      '<button class="btn ghostbtn" type="button" id="hint-btn">' + (shown >= p.hints.length ? "没有更多提示" : "要一条提示（" + shown + "/" + p.hints.length + "）") + '</button>' +
+      '</form>' +
+      '<div class="feedback" id="fb" role="status" aria-live="polite">' + (solved ? "这一页你已经解开过了。" : "") + '</div>' +
+      '<div class="hints" id="hints"></div>' +
+      '</article>';
+    if (solved) document.getElementById("fb").classList.add("ok");
+    var hintsEl = document.getElementById("hints");
+    for (var i = 0; i < shown; i++) hintsEl.insertAdjacentHTML("beforeend", "<p>提示 " + (i + 1) + "：" + p.hints[i] + "</p>");
+
+    document.getElementById("hint-btn").onclick = function () {
+      var n = state.hints[p.id] || 0;
+      if (n >= p.hints.length) return;
+      state.hints[p.id] = n + 1; save(); render();
+    };
+    document.getElementById("form").onsubmit = function (ev) {
+      ev.preventDefault();
+      var v = norm(document.getElementById("answer-input").value);
+      var fb = document.getElementById("fb");
+      if (!v) { fb.className = "feedback"; fb.textContent = "你什么都没写。"; return; }
+      var h = hash(v);
+      if (p.answers.indexOf(h) !== -1) {
+        fb.className = "feedback ok"; fb.textContent = "纸页边缘发出轻微的撕裂声。下一页出现了。";
+        if (state.unlocked <= p.id) state.unlocked = p.id + 1;
+        setTimeout(function () { state.current = p.id + 1; save(); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }, 900);
+        save();
+      } else if (p.near[h]) {
+        fb.className = "feedback"; fb.textContent = p.near[h];
+      } else {
+        var lines = ["不对。屋子里好像有人轻轻笑了一声。", "不对。纸上的字没有任何变化。", "不对。你听见走廊里有脚步声，又停了。"];
+        fb.className = "feedback"; fb.textContent = lines[Math.floor(Math.random() * lines.length)];
+      }
+    };
+
+    if (p.id === 3) startLamp();
+    if (p.id === 6) startTorch();
+  }
+
+  // 摩尔斯：B3 = -... ...--，单位 280ms
+  function startLamp() {
+    var lamp = document.getElementById("lamp");
+    var U = 280, seq = [];
+    function sym(code) { code.split("").forEach(function (c, i) { if (i) seq.push([0, 1]); seq.push([1, c === "-" ? 3 : 1]); }); }
+    sym("-..."); seq.push([0, 3]); sym("...--"); seq.push([0, 9]);
+    var i = 0;
+    (function step() {
+      if (!document.body.contains(lamp)) return;
+      var s = seq[i % seq.length];
+      lamp.classList.toggle("on", s[0] === 1);
+      i++;
+      lampTimer = setTimeout(step, s[1] * U);
+    })();
+  }
+
+  function startTorch() {
+    var box = document.getElementById("dark"), shade = document.getElementById("shade");
+    function move(ev) {
+      var r = box.getBoundingClientRect();
+      shade.style.setProperty("--x", (ev.clientX - r.left) + "px");
+      shade.style.setProperty("--y", (ev.clientY - r.top) + "px");
+    }
+    box.addEventListener("pointermove", move);
+    box.addEventListener("pointerdown", move);
+    box.addEventListener("pointerleave", function () { shade.style.setProperty("--x", "-200px"); shade.style.setProperty("--y", "-200px"); });
+  }
+
+  function renderEnding() {
+    status.textContent = "档案已归还";
+    stage.innerHTML =
+      '<article class="sheet ending">' +
+      '<div class="stamp">归档</div>' +
+      '<div class="sheet-head"><span>FILE 08 / 结案</span><span>P.终</span></div>' +
+      '<h2>镜子里的人是你</h2>' +
+      '<p>你合上档案。纸页边缘有你自己的指纹，每一页都有，颜色深浅不一，像是被翻过很多很多次。</p>' +
+      '<p>那封信是你写的。林砚是你曾经的名字，X-C01 是他们后来给你的名字。每一次重置之前，你都会把真相拆成七页，藏进这栋楼里，然后在下一次醒来的早上，重新找到它们。</p>' +
+      '<p>十一点零七分，档案室的灯亮了。你终于明白，那不是有人在确认档案还在，是有人在确认 <b>你</b> 还在。</p>' +
+      '<p class="note">系统通知：第 8 次记忆重置将于 00:00 开始。</p>' +
+      '<div class="row" style="margin-top:18px">' +
+      '<button class="btn" type="button" id="again">把信重新写一遍</button>' +
+      '<button class="btn ghostbtn" type="button" id="back">回到第 7 页</button>' +
+      '</div>' +
+      '</article>';
+    document.getElementById("again").onclick = restart;
+    document.getElementById("back").onclick = function () { state.current = 7; save(); render(); };
+  }
+
+  function restart() { state = { unlocked: 1, current: 1, hints: {} }; save(); render(); window.scrollTo({ top: 0 }); }
+
+  var resetBtn = document.getElementById("reset"), armed = false;
+  resetBtn.onclick = function () {
+    if (!armed) { armed = true; resetBtn.textContent = "再点一次确认：所有进度都会消失"; setTimeout(function () { armed = false; resetBtn.textContent = "烧掉所有进度，重新开始"; }, 4000); return; }
+    armed = false; resetBtn.textContent = "烧掉所有进度，重新开始"; restart();
+  };
+
+  console.log("%c你在找什么？答案不在这里。但她确实来过。", "color:#9a2f27;font-size:14px");
+  render();
+})();
+</script>
+</body>
+</html>
