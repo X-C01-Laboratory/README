@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>X-C01 残页</title>
+<title>三日未归</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Ma+Shan+Zheng&family=Courier+Prime&display=swap">
@@ -71,8 +71,8 @@
   }
   .ava.lin { background: linear-gradient(160deg, #3b3d44, #1c1d21); color: #a9acb6; }
   .ava.me  { background: linear-gradient(160deg, #445a48, #28352b); }
-  .twisted .ava.lin { background: linear-gradient(160deg, #445a48, #28352b); color: #cfd2cd; }
-  .twisted .ava.lin::after { content: "我"; }
+  .twisted .ava.lin { background: linear-gradient(160deg, #5a3535, #2e1a1a); color: #e0c8c8; }
+  .twisted .ava.lin::after { content: "铭"; }
   .twisted .ava.lin span { display: none; }
   .bubble {
     position: relative; max-width: min(72%, 300px); padding: 8px 11px; border-radius: 5px;
@@ -143,7 +143,7 @@
 <div class="app" id="app">
   <header class="bar">
     <span aria-hidden="true"></span>
-    <div class="who"><b id="name">林砚</b><span id="status">最后上线 2019-11-07</span></div>
+    <div class="who"><b id="name">苏晚</b><span id="status">最后上线 9月26日</span></div>
     <button class="iconbtn" type="button" id="menu-btn" aria-label="聊天设置" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
     </button>
@@ -155,7 +155,7 @@
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="chips" id="chips"></div>
   <form class="input" id="form" autocomplete="off">
-    <input id="text" type="text" spellcheck="false" placeholder="回复林砚…" aria-label="输入消息">
+    <input id="text" type="text" spellcheck="false" placeholder="回复苏晚…" aria-label="输入消息">
     <button class="send" id="send" type="submit">发送</button>
   </form>
   <div class="blackout" id="blackout"></div>
@@ -169,13 +169,13 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   var STAGES = {
-    1: { ans: ["ec5a0704"], near: {}, hints: ["我刚才发的那四句话，你注意每一句是怎么开头的。", "把那四句的第一个字连起来。"] },
-    2: { ans: ["7b5063e5"], near: {}, hints: ["11-07 那一行不是空的，字和纸是一个颜色。", "用手指长按那一行，或者用鼠标拖过去选中它。"] },
-    3: { ans: ["8e2c27e2"], near: { "cb36196c": "不是求救。它在说一个楼层，两个字符。" }, hints: ["是摩尔斯电码。第一个字符：长、短、短、短。", "第二个字符：短、短、短、长、长。B 是 -...，3 是 ...--"] },
-    4: { ans: ["2fc941c2", "c84003d1"], near: {}, hints: ["每个字母在字母表里往回数四个。Q 就变成 M。", "Q→M，M→I，V→R，S→O。是一个英文单词，写中文也行。"] },
-    5: { ans: ["7e2ef9d6"], near: { "605452b2": "只要月和日，四个数字。" }, hints: ["字是反的，倒过来读。它在问我是哪天不见的。", "你加我的时候，系统提示过我最后一次上线的日期。"] },
-    6: { ans: ["505ecfb6"], near: {}, hints: ["字都写在墙上。四个角落都照一照。", "最大的那几个字在最下面。"] },
-    7: { ans: ["54db92ff", "3de93555", "14a6babc", "1bd15669", "9ac012e4"], near: { "db7567e4": "不是我。你再看看照片，镜子里映出来的是谁？" }, hints: ["照片里映出来的人，手里正拿着手机。", "是你。回答“我”，或者写出档案上的编号。"] }
+    1: { ans: ["da9809ac", "22cab364"], near: {}, hints: ["我刚才发的那四句话，注意每一句是怎么开头的。", "把那四句的第一个字连起来读。"] },
+    2: { ans: ["57ca154b"], near: {}, hints: ["最后一行不是空的，字和纸是同一个颜色。", "用手指长按那一行，或者用鼠标拖过去选中它。"] },
+    3: { ans: ["8f2c2975"], near: { "cb36196c": "不是求救。它在说一个停车层，两个字符。" }, hints: ["是摩尔斯电码。第一个字符：长、短、短、短。", "第二个字符：短、短、长、长、长。B 是 -...，2 是 ..---" ] },
+    4: { ans: ["60809302", "a7637805"], near: {}, hints: ["每个字母在字母表里往回数四个。X 就变成 T。", "X→T，V→R，E→A，T→P。是一个英文单词，写中文也行。"] },
+    5: { ans: ["8ec890ec"], near: { "28391241": "只要月和日，四个数字。", "b79dfc42": "要四个数字，月份和日子。" }, hints: ["字是反的，倒过来读。它在问我们是哪天结的婚。", "你加我的时候，我的资料上写着结婚日期。"] },
+    6: { ans: ["b067ae66"], near: {}, hints: ["字都写在墙上。四个角落都照一照。", "最大的那几个字在最下面。"] },
+    7: { ans: ["7af6f6ee"], near: { "3b3234ec": "她三天前就不在了。你再看看，是谁握着这部手机？", "f79356b3": "报案的人是你。我问的是，握着手机的人是谁。" }, hints: ["照片里握着手机的，不是她。", "回答一个名字。档案里出现过这个人。"] }
   };
 
   function L(x) { return { f: "lin", x: x }; }
@@ -183,109 +183,111 @@
   var SCRIPTS = {
     s1: [
       S("23:07"),
-      S("你已添加了「林砚」，现在可以开始聊天了。"),
-      S("该用户最近一次上线：2019年11月7日", true),
-      L("你终于通过了"),
-      L("别问我在哪，我没有多少时间"),
+      S("你已添加了「苏晚」，现在可以开始聊天了。"),
+      S("苏晚 · 与你结婚 2016-05-20"),
+      S("该用户最近一次上线：9月26日 21:07", true),
+      L("是我"),
+      L("别报警，也别给我打电话"),
+      L("你怀疑我很久了，对吧"),
       L("接下来的四句话，每一句你都要看清楚"),
-      L("门锁换过了，原来那把是铜的，现在这把我打不开"),
-      L("后来档案室的灯每天夜里十一点零七分都会自己亮一次"),
-      L("有人翻过档案室，只拿走了一份档案"),
-      L("人不会凭空消失，除非有人希望他们消失"),
-      L("把我真正想说的话打给我。我不能直接写出来，他会看到")
+      L("周围的人都说我们很恩爱，只有我知道不是"),
+      L("四个月来，我每个星期四都说要加班"),
+      L("夜里回家的时候，你总是已经睡着了"),
+      L("里面藏着的东西，你一直没有问过我"),
+      L("我是每个星期几不在家？把答案打给我。我不能直接说，他在看")
     ],
-    ok1: [L("对"), L("门后有人"), { a: "pause", ms: 1200 }, L("他现在还在")],
+    ok1: [L("对"), L("周四晚上，我都去了同一个地方"), { a: "pause", ms: 1200 }, L("他现在还在跟着我")],
     s2: [
-      L("我从门缝里拍到了值班室的桌子"),
+      L("我从前台偷拍到了这份入住登记"),
       { f: "lin", card: "log" },
-      L("最后几行被人藏起来了"),
-      { a: "recall", x: "他看见我了" },
-      L("没事。你帮我看看，钥匙在几号房间？")
+      L("最后一行被人涂掉了"),
+      { a: "recall", x: "他回头了" },
+      L("没事。你帮我看看，他们订的是几号房？")
     ],
-    ok2: [L("0417"), L("我记得这个房间，在走廊最里面"), L("我现在过去")],
+    ok2: [L("0806"), L("对，八楼走廊最里面那间"), L("我现在过去")],
     s3: [
       S("23:14"),
-      L("0417 里没有钥匙"),
-      L("只有一盏灯，没有开关，它一直在闪"),
+      L("我先躲进了地下停车场"),
+      L("电梯里没有楼层数字，只有一盏灯，一直在闪"),
       { f: "lin", card: "lamp" },
-      L("门上贴了张纸：短的是点，长的是划"),
-      L("它想让我去哪一层？")
+      L("旁边贴了张纸：短的是点，长的是划"),
+      L("它在说哪一层？")
     ],
     ok3: [
-      L("B3……"),
-      L("可是这栋楼只有地上六层"),
+      L("B2……"),
+      L("可是我明明就在 B2"),
       { a: "pause", ms: 1400 },
       { a: "fakeme", x: "别去" },
       { a: "pause", ms: 1600 },
       L("？"),
       L("你为什么让我别去"),
       { a: "pause", ms: 1200 },
-      L("算了。电梯门开了")
+      L("算了。我看见你的车了")
     ],
     s4: [
       S("23:21"),
-      L("电梯只到 B3，再往下的按钮都被撬掉了"),
-      L("电梯门内侧有人用钥匙刻了几个字母"),
-      { f: "lin", big: "QMVVSV" },
+      L("车里没有人，仪表台上有人用钥匙刻了几个字母"),
+      { f: "lin", big: "XVET" },
       L("下面还有一行小字：每个字母，都向后退四步"),
       L("刻的是什么？")
     ],
-    ok4: [L("镜子"), L("走廊尽头真的有一面镜子，蒙着黑布"), { a: "glitch" }, L("布在动"), L("我掀开了")],
+    ok4: [L("陷阱"), L("这个词不是我刻的"), { a: "glitch" }, L("后视镜里有人"), L("我看不清他的脸，我跑进了酒店")],
     s5: [
+      L("我躲进了八楼的卫生间"),
       L("镜子上有人用口红写了字"),
       L("我拍给你，字是反的"),
-      { f: "lin", mirror: "我被困在那一天。\n每一次重置，我都回到那天早上。\n告诉我，我是哪一天不见的。\n只要月和日，四个数字。" },
-      L("是写给我的吗")
+      { f: "lin", mirror: "你怀疑了我四个月。\n那你还记得吗，\n我们是哪一天结的婚？\n月和日，四个数字。" },
+      L("是写给我们两个人的吗")
     ],
-    ok5: [L("1107"), L("那天早上我没有去上班"), L("我不记得我去了哪里"), { a: "pause", ms: 1000 }, L("镜子后面是空的"), L("能走进去")],
+    ok5: [L("0520"), L("那天你说过，不管发生什么都会相信我"), { a: "pause", ms: 1000 }, L("现在我需要你相信我"), L("卫生间后面有一间没开灯的房间")],
     s6: [
       S("23:48"),
       L("这里好黑"),
       L("手机闪光灯只能照亮一小块"),
       { f: "lin", card: "dark" },
-      L("墙上写满了字，是我的笔迹"),
+      L("墙上写满了字，好像是我的笔迹"),
       L("可我不记得写过"),
       L("你帮我找找，它让我去哪？")
     ],
     ok6: [
-      L("档案柜只有一个抽屉"),
-      L("里面只有一份档案"),
+      L("保险箱里只有一份文件"),
       { f: "lin", card: "file" },
-      L("编号和这个实验室的名字一样"),
-      L("照片里不是人，是一面镜子"),
-      L("镜子里映着一个拿着手机的人"),
+      L("是一份报案记录"),
+      L("报案人是你"),
+      L("照片里没有人，只有一部被握在手里的手机"),
+      L("握着它的人……"),
       { a: "glitch" },
-      L("这份档案是谁的？")
+      L("你觉得，现在在给你发消息的人是谁？")
     ],
     s7: [],
     end: [
       L("对"),
-      L("是你"),
+      L("是我"),
       { a: "pause", ms: 1400 },
       { a: "avatar" },
-      { a: "rename", v: "我" },
+      { a: "rename", v: "陈铭" },
       { a: "status", v: "在线" },
-      L("你一直在跟自己聊天"),
-      L("林砚是你以前的名字。X-C01 是他们后来给你的名字"),
-      L("每次重置之前，你都会给明天醒来的自己发一遍这些消息"),
-      L("然后在下一次醒来的夜里，重新加上这个好友"),
+      L("她三天前就不在了"),
+      L("酒店的记录、照片、聊天，都是我替你准备的"),
+      L("你只要相信，就永远不用去问她一句话"),
+      L("你怀疑了她四个月，一次都没有问过"),
       S("23:59", true),
-      { a: "recall", x: "他们来了" },
+      { a: "recall", x: "门开了" },
       { a: "recall", x: "别回头" },
       { a: "glitch" },
-      S("第 8 次记忆重置将于 00:00 开始", true),
+      S("对方正在共享实时位置：你身后 2 米", true),
       { a: "blackout" },
       S("00:00"),
-      { f: "me", x: "你终于通过了" },
+      { f: "me", x: "苏晚？" },
       { a: "done" }
     ]
   };
-  var WRONG = ["不对", "不是这个", "你是不是也看不清了", "快点。他在门外", "不对……灯又亮了"];
+  var WRONG = ["不对", "不是这个", "你是不是也不信我了", "快点。他在门外", "不对……灯又亮了"];
   var IDLE = ["还在吗", "你怎么不说话", "我听到你那边有声音"];
 
   // 状态
-  var KEY = "xc01-chat-v1";
-  function fresh() { return { stage: 1, hist: [], q: null, hints: {}, idle: {}, ui: { name: "林砚", status: "最后上线 2019-11-07", twisted: false }, done: false }; }
+  var KEY = "xc01-chat-v2";
+  function fresh() { return { stage: 1, hist: [], q: null, hints: {}, idle: {}, ui: { name: "苏晚", status: "最后上线 9月26日", twisted: false }, done: false }; }
   var st = fresh();
   try { var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if (sv && sv.hist) st = sv; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
@@ -319,30 +321,30 @@
     nameEl.textContent = st.ui.name;
     statusEl.textContent = st.ui.status; statusEl.className = "";
     app.classList.toggle("twisted", !!st.ui.twisted);
-    input.placeholder = st.ui.twisted ? "回复自己…" : "回复林砚…";
+    input.placeholder = st.ui.twisted ? "回复陈铭…" : "回复苏晚…";
   }
 
   function card(kind) {
     if (kind === "log") return '<div class="photo-log">' +
-      '<div><time>11-02 22:40</time><span>受试者 C01 又问起“她”的名字。按规程未回答。</span></div>' +
-      '<div><time>11-03 23:07</time><span>档案室灯亮约 4 秒。线路无异常。</span></div>' +
-      '<div><time>11-05 01:15</time><span>C01 在墙上写字，已擦除。<span class="redact">&#9608;&#9608;&#9608;&#9608;</span> 要求加快第七次重置。</span></div>' +
-      '<div><time>11-06 23:59</time><span>林砚申请调阅 C01 档案，驳回。</span></div>' +
-      '<div><time>11-07 --:--</time><span class="ghost">她把钥匙藏在 0417 号房间。不要让主任知道。</span></div>' +
-      '<div><time>11-07 08:30</time><span>档案员林砚未到岗。</span></div></div><div class="cap">照片 · 值班日志</div>';
-    if (kind === "lamp") return '<div class="video" role="img" aria-label="视频：一盏在闪烁的灯"><span class="rec">● REC</span><div class="lamp"></div><span class="ts">00:13 循环</span></div><div class="cap">视频 · 0417 号房</div>';
+      '<div><time>09-05 周四</time><span>21:10 入住 · 登记人 苏晚</span></div>' +
+      '<div><time>09-12 周四</time><span>21:32 入住 · 同一房间</span></div>' +
+      '<div><time>09-19 周四</time><span>20:58 入住 · 押金已付</span></div>' +
+      '<div><time>09-26 周四</time><span>21:07 入住 · 前台备注：<span class="redact">&#9608;&#9608;&#9608;&#9608;</span> 催促退房</span></div>' +
+      '<div><time>预订人</time><span class="ghost">陈铭。房号 0806，长期预留。</span></div>' +
+      '<div><time>发票抬头</time><span>周然（已寄送至家中）</span></div></div><div class="cap">照片 · 酒店入住登记</div>';
+    if (kind === "lamp") return '<div class="video" role="img" aria-label="视频：一盏在闪烁的灯"><span class="rec">● REC</span><div class="lamp"></div><span class="ts">00:13 循环</span></div><div class="cap">视频 · 地下停车场电梯</div>';
     if (kind === "dark") return '<div class="dark">' +
       '<i style="left:6%;top:8%;font-size:22px;transform:rotate(-7deg)">别回头</i>' +
-      '<i style="left:60%;top:6%;font-size:15px">第 7 次</i>' +
-      '<i style="left:52%;top:36%;font-size:19px;transform:rotate(5deg)">她没有离开</i>' +
-      '<i style="left:8%;top:48%;font-size:16px">钥匙不在房间里</i>' +
-      '<i style="left:24%;top:74%;font-size:28px;transform:rotate(-3deg)">去 档案柜</i>' +
-      '<i style="left:80%;top:80%;font-size:13px">C01</i>' +
+      '<i style="left:60%;top:6%;font-size:15px">第 3 天</i>' +
+      '<i style="left:52%;top:36%;font-size:19px;transform:rotate(5deg)">她没有走</i>' +
+      '<i style="left:8%;top:48%;font-size:16px">保单在里面</i>' +
+      '<i style="left:24%;top:74%;font-size:28px;transform:rotate(-3deg)">去 保险箱</i>' +
+      '<i style="left:80%;top:80%;font-size:13px">陈</i>' +
       '<div class="shade"></div><span class="tip">在照片上移动鼠标或手指</span></div><div class="cap">照片 · 已调暗</div>';
-    if (kind === "file") return '<div class="file"><div class="pic" aria-label="照片：一面镜子"></div><div>' +
-      '<div><b>编号</b> X-C01</div><div><b>姓名</b> <span class="blank">&nbsp;</span></div>' +
-      '<div><b>入组</b> 2019-11-07</div><div><b>状态</b> 记忆重置第 7 次</div>' +
-      '<div><b>备注</b> 受试者每次重置前会给自己留言</div></div></div><div class="cap">照片 · 档案封面</div>';
+    if (kind === "file") return '<div class="file"><div class="pic" aria-label="照片：一只握着手机的手"></div><div>' +
+      '<div><b>报案人</b> 周然</div><div><b>失踪人</b> 苏晚</div>' +
+      '<div><b>时间</b> 9月26日 21:07</div><div><b>位置</b> 城南酒店 0806</div>' +
+      '<div><b>备注</b> 手机最后由他人持有，尚未找到</div></div></div><div class="cap">照片 · 报案记录</div>';
     return "";
   }
 
@@ -352,7 +354,7 @@
     else if (m.f === "end") { el.className = "ending-words"; el.textContent = m.x; }
     else {
       el.className = "row " + (m.f === "me" ? "me" : "lin");
-      var ava = '<div class="ava ' + (m.f === "me" ? "me" : "lin") + '" aria-hidden="true">' + (m.f === "me" ? "我" : "<span>林</span>") + '</div>';
+      var ava = '<div class="ava ' + (m.f === "me" ? "me" : "lin") + '" aria-hidden="true">' + (m.f === "me" ? "我" : "<span>晚</span>") + '</div>';
       var b;
       if (m.card) b = '<div class="bubble card">' + card(m.card) + '</div>';
       else if (m.big) b = '<div class="bubble big">' + esc(m.big) + '</div>';
@@ -395,7 +397,7 @@
     }
     if (m.a === "fakeme") { await wait(300); push({ f: "me", x: m.x }); return; }
     if (m.a === "blackout") { var bo = document.getElementById("blackout"); bo.classList.add("on"); blip(true); await wait(1800); bo.classList.remove("on"); return wait(700); }
-    if (m.a === "done") { st.done = true; save(); await wait(900); push({ f: "end", x: "欢迎回来。" }); return; }
+    if (m.a === "done") { st.done = true; save(); await wait(900); push({ f: "end", x: "欢迎回家。" }); return; }
     if (m.f === "sys") { await wait(350); push(m); return; }
     if (m.f === "me") { await wait(400); push(m); return; }
     return linSays(m);
@@ -404,7 +406,7 @@
   function lock(on) { busy = on; input.disabled = on || st.done; sendBtn.disabled = on || st.done; renderChips(); }
   function renderChips() {
     chips.innerHTML = "";
-    if (st.done) { addChip("再聊一次", restart); return; }
+    if (st.done) { addChip("重新开始", restart); return; }
     if (!busy) addChip("我看不懂", function () { send("我看不懂"); });
   }
   function addChip(label, fn) { var c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = label; c.onclick = fn; chips.appendChild(c); }
