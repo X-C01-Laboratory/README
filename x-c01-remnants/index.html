@@ -3,26 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>三日未归</title>
+<title>今晚的约定</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Ma+Shan+Zheng&family=Courier+Prime&display=swap">
 <style>
-  /* 只有一套深色主题：深夜里的聊天窗口。 */
+  /* 日常聊天软件的观感：浅灰底、白色和绿色气泡。单一浅色主题。 */
   :root {
-    color-scheme: dark;
-    --void: #050505;
-    --bg: #101211;
-    --bar: #181a19;
-    --line: #262927;
-    --in: #242726;
-    --out: #3b6645;
-    --out-text: #e3eee4;
-    --text: #d4d7d2;
-    --muted: #6d736d;
-    --blood: #a31d1d;
-    --paper: #c9c0ab;
-    --ink: #2a241f;
+    color-scheme: light;
+    --page: #d9d9d9;
+    --bg: #ededed;
+    --bar: #ededed;
+    --line: #d6d6d6;
+    --in: #ffffff;
+    --out: #95ec69;
+    --text: #191919;
+    --muted: #8a8a8a;
+    --link: #576b95;
+    --paper: #f4efe2;
+    --ink: #2b2620;
     --font: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
     --font-hand: "Ma Shan Zheng", "STKaiti", "KaiTi", cursive;
     --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
@@ -30,56 +29,51 @@
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
-    margin: 0; background: var(--void); color: var(--text);
-    font-family: var(--font); font-size: 15px; line-height: 1.6;
+    margin: 0; background: var(--page); color: var(--text);
+    font-family: var(--font); font-size: 16px; line-height: 1.55;
     display: flex; justify-content: center;
   }
   .app {
     position: relative; width: 100%; max-width: 460px; height: 100%;
-    display: flex; flex-direction: column; background: var(--bg);
-    border-inline: 1px solid #1c1e1d; overflow: hidden;
+    display: flex; flex-direction: column; background: var(--bg); overflow: hidden;
+    box-shadow: 0 0 0 1px #cfcfcf;
   }
-  /* 顶栏 */
   .bar {
     flex: none; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center;
     background: var(--bar); border-bottom: 1px solid var(--line); padding: 8px 6px;
   }
   .who { text-align: center; line-height: 1.3; min-width: 0; }
-  .who b { display: block; font-weight: 500; font-size: 16px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .who span { font-size: 11px; color: var(--muted); }
-  .who span.typing { color: #8fb596; }
+  .who b { display: block; font-weight: 500; font-size: 17px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who span { font-size: 11px; color: var(--muted); min-height: 1.3em; display: block; }
+  .who span.typing { color: var(--link); }
   .iconbtn { width: 40px; height: 36px; display: grid; place-items: center; background: none; border: 0; color: var(--text); cursor: pointer; border-radius: 6px; }
-  .iconbtn:hover { background: #222523; }
+  .iconbtn:hover { background: #dfdfdf; }
   .iconbtn svg { width: 22px; height: 22px; }
-  :focus-visible { outline: 2px solid #8fb596; outline-offset: 2px; }
+  :focus-visible { outline: 2px solid #07c160; outline-offset: 2px; }
 
-  .menu { position: absolute; right: 8px; top: 54px; z-index: 5; background: #1e201f; border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; min-width: 190px; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+  .menu { position: absolute; right: 8px; top: 54px; z-index: 5; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; min-width: 190px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
   .menu[hidden] { display: none; }
-  .menu button { text-align: left; background: none; border: 0; color: var(--text); font: inherit; padding: 9px 12px; border-radius: 4px; cursor: pointer; }
-  .menu button:hover { background: #2a2d2b; }
-  .menu button.danger { color: #e06a6a; }
+  .menu button { text-align: left; background: none; border: 0; color: var(--text); font: inherit; font-size: 15px; padding: 9px 12px; border-radius: 4px; cursor: pointer; }
+  .menu button:hover { background: #f0f0f0; }
+  .menu button.danger { color: #d13b3b; }
 
-  /* 消息区 */
-  .msgs { flex: 1; overflow-y: auto; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 14px; overscroll-behavior: contain; }
-  .sys { align-self: center; font-size: 12px; color: var(--muted); text-align: center; max-width: 85%; }
-  .sys.red { color: #c24a4a; }
+  .msgs { flex: 1; overflow-y: auto; padding: 14px 14px 18px; display: flex; flex-direction: column; gap: 14px; overscroll-behavior: contain; }
+  .sys { align-self: center; font-size: 12px; color: var(--muted); text-align: center; max-width: 85%; background: #dadada; padding: 1px 8px; border-radius: 3px; color: #7a7a7a; }
+  .sys.red { color: #a44; background: transparent; }
   .row { display: flex; gap: 10px; align-items: flex-start; }
   .row.me { flex-direction: row-reverse; }
   .ava {
-    flex: none; width: 38px; height: 38px; border-radius: 5px; display: grid; place-items: center;
-    font-size: 16px; color: #cfd2cd; background: #3a3f3c; user-select: none;
+    flex: none; width: 40px; height: 40px; border-radius: 5px; display: grid; place-items: center;
+    font-size: 17px; color: #fff; user-select: none;
   }
-  .ava.lin { background: linear-gradient(160deg, #3b3d44, #1c1d21); color: #a9acb6; }
-  .ava.me  { background: linear-gradient(160deg, #445a48, #28352b); }
-  .twisted .ava.lin { background: linear-gradient(160deg, #5a3535, #2e1a1a); color: #e0c8c8; }
-  .twisted .ava.lin::after { content: "铭"; }
-  .twisted .ava.lin span { display: none; }
+  .ava.lin { background: linear-gradient(160deg, #d98a9c, #b25a73); }
+  .ava.me  { background: linear-gradient(160deg, #6f8fb3, #46617f); }
   .bubble {
-    position: relative; max-width: min(72%, 300px); padding: 8px 11px; border-radius: 5px;
+    position: relative; max-width: min(72%, 300px); padding: 9px 12px; border-radius: 5px;
     background: var(--in); color: var(--text); word-break: break-word; white-space: pre-wrap;
   }
-  .bubble::before { content: ""; position: absolute; top: 13px; left: -5px; border: 5px solid transparent; border-left: 0; border-right-color: var(--in); }
-  .me .bubble { background: var(--out); color: var(--out-text); }
+  .bubble::before { content: ""; position: absolute; top: 14px; left: -5px; border: 5px solid transparent; border-left: 0; border-right-color: var(--in); }
+  .me .bubble { background: var(--out); }
   .me .bubble::before { left: auto; right: -5px; border: 5px solid transparent; border-right: 0; border-left-color: var(--out); }
   .bubble.big { font-family: var(--font-mono); font-size: 24px; letter-spacing: .25em; }
   .bubble.mirror span { display: inline-block; transform: scaleX(-1); }
@@ -89,61 +83,45 @@
   .appear { animation: pop .18s ease-out; }
   @keyframes pop { from { opacity: 0; transform: translateY(4px); } }
 
-  /* 卡片：日志照片 */
-  .photo-log { background: var(--paper); color: var(--ink); padding: 12px 12px 10px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75; border-radius: 3px; filter: sepia(.2) brightness(.92); }
-  .photo-log div { display: grid; grid-template-columns: 6.6em 1fr; gap: 6px; }
-  .photo-log time { color: #6a6154; }
+  .photo-log { background: var(--paper); color: var(--ink); padding: 12px 12px 10px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75; border-radius: 3px; }
+  .photo-log h4 { margin: 0 0 6px; font-family: var(--font); font-size: 14px; text-align: center; letter-spacing: .3em; }
+  .photo-log div { display: grid; grid-template-columns: 4.6em 1fr; gap: 6px; }
+  .photo-log time { color: #7a705f; }
   .redact { background: var(--ink); color: var(--ink); }
   .ghost { color: var(--paper); }
-  .ghost::selection { background: var(--blood); color: #fff2ea; }
-  /* 卡片：视频里的灯 */
-  .video { position: relative; background: #000; height: 170px; border-radius: 3px; display: grid; place-items: center; overflow: hidden; }
-  .video .ts { position: absolute; right: 8px; bottom: 6px; font-family: var(--font-mono); font-size: 11px; color: #9a9a9a; }
-  .video .rec { position: absolute; left: 8px; top: 6px; font-family: var(--font-mono); font-size: 11px; color: #c33; }
-  .lamp { width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #3a3630, #141210 70%); }
-  .lamp.on { background: radial-gradient(circle at 40% 35%, #fff7d6, #f1cf7a 55%, #b8862d); box-shadow: 0 0 26px 8px rgba(241,207,122,.6), 0 0 80px 30px rgba(241,207,122,.2); }
-  /* 卡片：暗室 */
-  .dark { position: relative; height: 260px; background: #bfb6a1; overflow: hidden; border-radius: 3px; touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
-  .dark i { position: absolute; font-style: normal; font-family: var(--font-hand); color: #5a1010; white-space: nowrap; }
-  .dark .shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--x, -200px) var(--y, -200px), transparent 0 36px, rgba(4,4,4,.985) 74px); }
+  .ghost::selection { background: #07c160; color: #fff; }
+  .video { position: relative; background: #111; height: 170px; border-radius: 3px; display: grid; place-items: center; overflow: hidden; }
+  .video .ts { position: absolute; right: 8px; bottom: 6px; font-family: var(--font-mono); font-size: 11px; color: #bdbdbd; }
+  .video .rec { position: absolute; left: 8px; top: 6px; font-family: var(--font-mono); font-size: 11px; color: #f66; }
+  .lamp { width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #4a3f38, #1d1815 70%); }
+  .lamp.on { background: radial-gradient(circle at 40% 35%, #fff7d6, #f5c46a 55%, #c9822d); box-shadow: 0 0 26px 8px rgba(245,196,106,.6), 0 0 80px 30px rgba(245,196,106,.2); }
+  .dark { position: relative; height: 260px; background: #cfc4ad; overflow: hidden; border-radius: 3px; touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
+  .dark i { position: absolute; font-style: normal; font-family: var(--font-hand); color: #6a2230; white-space: nowrap; }
+  .dark .shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--x, -200px) var(--y, -200px), transparent 0 36px, rgba(6,6,6,.985) 74px); }
   .dark .tip { position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #555; z-index: 1; pointer-events: none; }
-  /* 卡片：档案 */
-  .file { background: var(--paper); color: var(--ink); padding: 12px; border-radius: 3px; font-family: var(--font-mono); font-size: 12.5px; display: grid; grid-template-columns: 64px 1fr; gap: 10px; filter: sepia(.2) brightness(.92); }
-  .file .pic { aspect-ratio: 3/4; max-width: 100%; background: linear-gradient(160deg, #8e979a, #d5dada 45%, #7f888c); border: 3px solid #eee8da; }
+  .file { background: var(--paper); color: var(--ink); padding: 12px; border-radius: 3px; font-family: var(--font-mono); font-size: 12.5px; }
+  .file h4 { margin: 0 0 6px; font-family: var(--font); font-size: 14px; text-align: center; letter-spacing: .3em; }
+  .file div { display: grid; grid-template-columns: 4.8em 1fr; gap: 6px; }
   .file b { font-weight: 700; }
-  .file .blank { display: inline-block; min-width: 4.5em; border-bottom: 1px solid var(--ink); }
 
-  /* 底部输入 */
-  .chips { flex: none; display: flex; gap: 8px; padding: 6px 16px 0; flex-wrap: wrap; }
-  .chip { font: inherit; font-size: 13px; background: #1d201e; color: #b9c0b9; border: 1px solid #2f3431; border-radius: 14px; padding: 4px 12px; cursor: pointer; }
-  .chip:hover { background: #262a27; }
-  form.input { flex: none; display: flex; gap: 8px; align-items: center; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); background: var(--bar); border-top: 1px solid var(--line); margin-top: 6px; }
-  form.input input { flex: 1; min-width: 0; font: inherit; font-size: 16px; color: var(--text); background: #232624; border: 0; border-radius: 5px; padding: 8px 10px; }
-  form.input input:disabled { opacity: .5; }
-  .send { font: inherit; font-size: 14px; background: #3d7a4b; color: #eef6ef; border: 0; border-radius: 5px; padding: 8px 14px; cursor: pointer; }
-  .send:disabled { background: #2a3a2e; color: #6f7d71; cursor: default; }
+  .chips { flex: none; display: flex; gap: 8px; padding: 6px 14px 0; flex-wrap: wrap; }
+  .chip { font: inherit; font-size: 13px; background: #fff; color: #576b95; border: 1px solid #d6d6d6; border-radius: 14px; padding: 4px 12px; cursor: pointer; }
+  .chip:hover { background: #f5f5f5; }
+  form.input { flex: none; display: flex; gap: 8px; align-items: center; padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)); background: var(--bar); border-top: 1px solid var(--line); margin-top: 6px; }
+  form.input input { flex: 1; min-width: 0; font: inherit; font-size: 16px; color: var(--text); background: #fff; border: 0; border-radius: 5px; padding: 8px 10px; }
+  form.input input:disabled { opacity: .6; }
+  .send { font: inherit; font-size: 14px; background: #07c160; color: #fff; border: 0; border-radius: 5px; padding: 8px 14px; cursor: pointer; }
+  .send:disabled { background: #a8dcc0; color: #f2fbf6; cursor: default; }
 
-  /* 惊吓效果 */
-  .glitch { animation: glitch .45s steps(2) 1; }
-  @keyframes glitch {
-    0% { transform: translate(0); filter: none; }
-    20% { transform: translate(-3px, 1px); filter: hue-rotate(-40deg) contrast(1.6); }
-    40% { transform: translate(3px, -2px); filter: invert(.9); }
-    60% { transform: translate(-2px, 2px); filter: saturate(3) hue-rotate(160deg); }
-    80% { transform: translate(2px, 0); filter: brightness(.3); }
-    100% { transform: none; filter: none; }
-  }
-  .blackout { position: absolute; inset: 0; background: #000; z-index: 8; pointer-events: none; opacity: 0; transition: opacity .6s; }
-  .blackout.on { opacity: 1; }
-  .ending-words { font-family: var(--font-hand); font-size: 28px; color: #b52222; align-self: center; text-align: center; line-height: 1.5; padding-block: 8px; }
-  @media (prefers-reduced-motion: reduce) { .glitch, .appear { animation: none; } .blackout { transition: none; } }
+  .ending-words { font-family: var(--font-hand); font-size: 30px; color: #b0435c; align-self: center; text-align: center; line-height: 1.5; padding-block: 8px; }
+  @media (prefers-reduced-motion: reduce) { .appear { animation: none; } }
 </style>
 </head>
 <body>
 <div class="app" id="app">
   <header class="bar">
     <span aria-hidden="true"></span>
-    <div class="who"><b id="name">苏晚</b><span id="status">最后上线 9月26日</span></div>
+    <div class="who"><b id="name">苏晚</b><span id="status"></span></div>
     <button class="iconbtn" type="button" id="menu-btn" aria-label="聊天设置" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
     </button>
@@ -155,11 +133,10 @@
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="chips" id="chips"></div>
   <form class="input" id="form" autocomplete="off">
-    <input id="text" type="text" spellcheck="false" placeholder="回复苏晚…" aria-label="输入消息">
+    <input id="text" type="text" spellcheck="false" placeholder="发消息" aria-label="输入消息">
     <button class="send" id="send" type="submit">发送</button>
   </form>
-  <div class="blackout" id="blackout"></div>
-</div>
+  </div>
 
 <script>
 (function () {
@@ -169,125 +146,110 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   var STAGES = {
-    1: { ans: ["da9809ac", "22cab364"], near: {}, hints: ["我刚才发的那四句话，注意每一句是怎么开头的。", "把那四句的第一个字连起来读。"] },
-    2: { ans: ["57ca154b"], near: {}, hints: ["最后一行不是空的，字和纸是同一个颜色。", "用手指长按那一行，或者用鼠标拖过去选中它。"] },
-    3: { ans: ["8f2c2975"], near: { "cb36196c": "不是求救。它在说一个停车层，两个字符。" }, hints: ["是摩尔斯电码。第一个字符：长、短、短、短。", "第二个字符：短、短、长、长、长。B 是 -...，2 是 ..---" ] },
-    4: { ans: ["60809302", "a7637805"], near: {}, hints: ["每个字母在字母表里往回数四个。X 就变成 T。", "X→T，V→R，E→A，T→P。是一个英文单词，写中文也行。"] },
-    5: { ans: ["8ec890ec"], near: { "28391241": "只要月和日，四个数字。", "b79dfc42": "要四个数字，月份和日子。" }, hints: ["字是反的，倒过来读。它在问我们是哪天结的婚。", "你加我的时候，我的资料上写着结婚日期。"] },
-    6: { ans: ["b067ae66"], near: {}, hints: ["字都写在墙上。四个角落都照一照。", "最大的那几个字在最下面。"] },
-    7: { ans: ["7af6f6ee"], near: { "3b3234ec": "她三天前就不在了。你再看看，是谁握着这部手机？", "f79356b3": "报案的人是你。我问的是，握着手机的人是谁。" }, hints: ["照片里握着手机的，不是她。", "回答一个名字。档案里出现过这个人。"] }
+    1: { ans: ["ca8f2015"], near: {}, hints: ["我发的那四句话，看看每一句是怎么开头的。", "把四句话的第一个字连起来读。"] },
+    2: { ans: ["6523e4dc"], near: {}, hints: ["第三条没有被划掉，只是字和纸是同一个颜色。", "用手指长按那一行，或者用鼠标拖过去选中它。"] },
+    3: { ans: ["1324aa7c"], near: { "cb36196c": "不是求救。它在说一个包间号，两个字符。" }, hints: ["是摩尔斯电码。第一个字符：短、长。", "第二个字符：长、长、长、短、短。A 是 .-，8 是 ---.." ] },
+    4: { ans: ["e46b4575", "57c408f5"], near: {}, hints: ["每个字母在字母表里往回数四个。X 就变成 T。", "X→T，V→R，Y→U，W→S。是一个英文单词，写中文也行。"] },
+    5: { ans: ["8ec890ec"], near: { "28391241": "只要月和日，四个数字。" }, hints: ["字是反的，倒过来读。它问的是我们哪天结的婚。", "你可以翻翻我们的聊天，我们的结婚纪念日一直在置顶里。"] },
+    6: { ans: ["6159fd3f"], near: {}, hints: ["字都写在墙上。四个角落都照一照。", "最大的那几个字在最下面。"] },
+    7: { ans: ["f79356b3", "14a6babc", "9ac012e4", "1bd15669", "e55f99bf", "afe052a8"], near: { "7af6f6ee": "这是那个名字。我问的是，谁用它订的位。", "3b3234ec": "不是我。订位单上的付款账户，你再看一眼。" }, hints: ["订位单上写着付款账户。", "是你。回答你自己的名字，或者“我”。"] }
   };
 
   function L(x) { return { f: "lin", x: x }; }
   function S(x, red) { return { f: "sys", x: x, red: !!red }; }
   var SCRIPTS = {
     s1: [
-      S("23:07"),
-      S("你已添加了「苏晚」，现在可以开始聊天了。"),
-      S("苏晚 · 与你结婚 2016-05-20"),
-      S("该用户最近一次上线：9月26日 21:07", true),
-      L("是我"),
-      L("别报警，也别给我打电话"),
-      L("你怀疑我很久了，对吧"),
-      L("接下来的四句话，每一句你都要看清楚"),
-      L("周围的人都说我们很恩爱，只有我知道不是"),
-      L("四个月来，我每个星期四都说要加班"),
-      L("夜里回家的时候，你总是已经睡着了"),
-      L("里面藏着的东西，你一直没有问过我"),
-      L("我是每个星期几不在家？把答案打给我。我不能直接说，他在看")
+      S("周四 19:47"),
+      L("你回我一下"),
+      L("我现在在外面，一会儿再跟你说细节"),
+      L("你说想试试的那件事，我还是来了"),
+      L("接下来的四句话，你别漏看"),
+      L("今天他约我吃饭，我答应了"),
+      L("晚上八点，就在我们以前常去的那家"),
+      L("回来之前，我想先问你一句"),
+      L("家里抽屉里那份约定，你还记得内容吗"),
+      L("我今晚想告诉你的话，就藏在里面。你打给我")
     ],
-    ok1: [L("对"), L("周四晚上，我都去了同一个地方"), { a: "pause", ms: 1200 }, L("他现在还在跟着我")],
+    ok1: [L("对"), L("我想回家，可我要先弄清楚一件事"), { a: "pause", ms: 1200 }, L("你先别问，配合我")],
     s2: [
-      L("我从前台偷拍到了这份入住登记"),
+      L("这是那份约定，我出门前从抽屉里拍的"),
       { f: "lin", card: "log" },
-      L("最后一行被人涂掉了"),
-      { a: "recall", x: "他回头了" },
-      L("没事。你帮我看看，他们订的是几号房？")
+      L("有一条被我涂白了，你记不记得"),
+      { a: "recall", x: "我发错了一句" },
+      L("暗号是什么？")
     ],
-    ok2: [L("0806"), L("对，八楼走廊最里面那间"), L("我现在过去")],
+    ok2: [L("桂花"), L("你还记得"), L("那是我们婚礼上的花"), L("我现在过去，你等我消息")],
     s3: [
-      S("23:14"),
-      L("我先躲进了地下停车场"),
-      L("电梯里没有楼层数字，只有一盏灯，一直在闪"),
+      S("20:12"),
+      L("餐厅门口的招牌灯坏了，一闪一闪的"),
       { f: "lin", card: "lamp" },
-      L("旁边贴了张纸：短的是点，长的是划"),
-      L("它在说哪一层？")
+      L("服务员说，它是包间的提示灯，短的是点，长的是划"),
+      L("它在说几号包间？")
     ],
     ok3: [
-      L("B2……"),
-      L("可是我明明就在 B2"),
+      L("A8"),
+      L("对，就是这间"),
       { a: "pause", ms: 1400 },
-      { a: "fakeme", x: "别去" },
-      { a: "pause", ms: 1600 },
-      L("？"),
-      L("你为什么让我别去"),
-      { a: "pause", ms: 1200 },
-      L("算了。我看见你的车了")
+      L("门开着，里面只有一张两人桌"),
+      L("桌上放着一张餐巾纸")
     ],
     s4: [
-      S("23:21"),
-      L("车里没有人，仪表台上有人用钥匙刻了几个字母"),
-      { f: "lin", big: "XVET" },
+      S("20:19"),
+      L("餐巾纸上有人用笔写了一串字母"),
+      { f: "lin", big: "XVYWX" },
       L("下面还有一行小字：每个字母，都向后退四步"),
-      L("刻的是什么？")
+      L("写的是什么？")
     ],
-    ok4: [L("陷阱"), L("这个词不是我刻的"), { a: "glitch" }, L("后视镜里有人"), L("我看不清他的脸，我跑进了酒店")],
+    ok4: [L("信任"), L("这个词，我认得字迹"), { a: "pause", ms: 1000 }, L("我先去一趟洗手间，我得冷静一下")],
     s5: [
-      L("我躲进了八楼的卫生间"),
-      L("镜子上有人用口红写了字"),
-      L("我拍给你，字是反的"),
-      { f: "lin", mirror: "你怀疑了我四个月。\n那你还记得吗，\n我们是哪一天结的婚？\n月和日，四个数字。" },
-      L("是写给我们两个人的吗")
+      L("洗手间的镜子上贴着一张便签"),
+      L("字是反的，我拍给你"),
+      { f: "lin", mirror: "你说想试试。\n我说好。\n可你还记得吗，\n我们是哪一天结的婚？\n月和日，四个数字。" },
+      L("是写给我的吗")
     ],
-    ok5: [L("0520"), L("那天你说过，不管发生什么都会相信我"), { a: "pause", ms: 1000 }, L("现在我需要你相信我"), L("卫生间后面有一间没开灯的房间")],
+    ok5: [L("0520"), L("你还记得"), L("我以为你早就忘了"), { a: "pause", ms: 1000 }, L("整层楼忽然停电了")],
     s6: [
-      S("23:48"),
-      L("这里好黑"),
-      L("手机闪光灯只能照亮一小块"),
+      S("20:36"),
+      L("走廊全黑了"),
+      L("手机的手电只能照亮一小块"),
       { f: "lin", card: "dark" },
-      L("墙上写满了字，好像是我的笔迹"),
-      L("可我不记得写过"),
+      L("墙上是客人们的留言"),
+      L("有一句好像是写给我的"),
       L("你帮我找找，它让我去哪？")
     ],
     ok6: [
-      L("保险箱里只有一份文件"),
+      L("露台上只有一张桌子，一支蜡烛"),
+      L("桌上压着一张订位单"),
       { f: "lin", card: "file" },
-      L("是一份报案记录"),
-      L("报案人是你"),
-      L("照片里没有人，只有一部被握在手里的手机"),
-      L("握着它的人……"),
-      { a: "glitch" },
-      L("你觉得，现在在给你发消息的人是谁？")
+      L("订位人是陈铭，我根本不认识这个人"),
+      L("备注写着：两人位，请勿打扰"),
+      L("付款账户……"),
+      L("你看一眼。陈铭到底是谁？")
     ],
     s7: [],
     end: [
       L("对"),
-      L("是我"),
+      L("是你"),
       { a: "pause", ms: 1400 },
-      { a: "avatar" },
-      { a: "rename", v: "陈铭" },
-      { a: "status", v: "在线" },
-      L("她三天前就不在了"),
-      L("酒店的记录、照片、聊天，都是我替你准备的"),
-      L("你只要相信，就永远不用去问她一句话"),
-      L("你怀疑了她四个月，一次都没有问过"),
-      S("23:59", true),
-      { a: "recall", x: "门开了" },
-      { a: "recall", x: "别回头" },
-      { a: "glitch" },
-      S("对方正在共享实时位置：你身后 2 米", true),
-      { a: "blackout" },
-      S("00:00"),
-      { f: "me", x: "苏晚？" },
+      L("三个月前你说想试试，我答应了"),
+      L("我怕你觉得我不够开放，其实我从来没想过"),
+      L("暗号我一直没用，是想等你自己喊停"),
+      L("可你订了位，用了别人的名字，坐在别处看着我"),
+      L("你现在在哪？"),
+      { a: "pause", ms: 1400 },
+      S("20:47"),
+      { f: "me", x: "我在露台对面。我不想再试了，对不起" },
+      L("我看见你了"),
+      L("回家吧"),
       { a: "done" }
     ]
   };
-  var WRONG = ["不对", "不是这个", "你是不是也不信我了", "快点。他在门外", "不对……灯又亮了"];
+  var WRONG = ["不对", "不是这个", "你再想想", "你是不是没在认真看", "不对……"];
   var IDLE = ["还在吗", "你怎么不说话", "我听到你那边有声音"];
 
   // 状态
-  var KEY = "xc01-chat-v2";
-  function fresh() { return { stage: 1, hist: [], q: null, hints: {}, idle: {}, ui: { name: "苏晚", status: "最后上线 9月26日", twisted: false }, done: false }; }
+  var KEY = "xc01-chat-v3";
+  function fresh() { return { stage: 1, hist: [], q: null, hints: {}, idle: {}, ui: { name: "苏晚", status: "", twisted: false }, done: false }; }
   var st = fresh();
   try { var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if (sv && sv.hist) st = sv; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
@@ -310,7 +272,7 @@
       if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
       if (ac.state === "suspended") ac.resume();
       var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
-      o.type = low ? "sawtooth" : "sine";
+      o.type = "sine";
       o.frequency.setValueAtTime(low ? 90 : 880, t); o.frequency.exponentialRampToValueAtTime(low ? 40 : 620, t + (low ? .5 : .09));
       g.gain.setValueAtTime(low ? .08 : .05, t); g.gain.exponentialRampToValueAtTime(.0001, t + (low ? .55 : .12));
       o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .6);
@@ -320,31 +282,30 @@
   function applyUI() {
     nameEl.textContent = st.ui.name;
     statusEl.textContent = st.ui.status; statusEl.className = "";
-    app.classList.toggle("twisted", !!st.ui.twisted);
-    input.placeholder = st.ui.twisted ? "回复陈铭…" : "回复苏晚…";
+        input.placeholder = "发消息";
   }
 
   function card(kind) {
-    if (kind === "log") return '<div class="photo-log">' +
-      '<div><time>09-05 周四</time><span>21:10 入住 · 登记人 苏晚</span></div>' +
-      '<div><time>09-12 周四</time><span>21:32 入住 · 同一房间</span></div>' +
-      '<div><time>09-19 周四</time><span>20:58 入住 · 押金已付</span></div>' +
-      '<div><time>09-26 周四</time><span>21:07 入住 · 前台备注：<span class="redact">&#9608;&#9608;&#9608;&#9608;</span> 催促退房</span></div>' +
-      '<div><time>预订人</time><span class="ghost">陈铭。房号 0806，长期预留。</span></div>' +
-      '<div><time>发票抬头</time><span>周然（已寄送至家中）</span></div></div><div class="cap">照片 · 酒店入住登记</div>';
-    if (kind === "lamp") return '<div class="video" role="img" aria-label="视频：一盏在闪烁的灯"><span class="rec">● REC</span><div class="lamp"></div><span class="ts">00:13 循环</span></div><div class="cap">视频 · 地下停车场电梯</div>';
+    if (kind === "log") return '<div class="photo-log"><h4>我们的约定</h4>' +
+      '<div><time>第一条</time><span>双方自愿，任何一方随时可以说不。</span></div>' +
+      '<div><time>第二条</time><span>对方是谁，必须让另一方知道。</span></div>' +
+      '<div><time>第三条</time><span class="ghost">暗号是“桂花”。一说出口，一切立刻停止。</span></div>' +
+      '<div><time>第四条</time><span>不许过夜，不许隐瞒，不许借此报复。</span></div>' +
+      '<div><time>第五条</time><span>试过之后，谁都不许再提。</span></div>' +
+      '<div><time>签名</time><span>周然　苏晚</span></div></div><div class="cap">照片 · 抽屉里的纸</div>';
+    if (kind === "lamp") return '<div class="video" role="img" aria-label="视频：一盏在闪烁的灯"><span class="rec">● REC</span><div class="lamp"></div><span class="ts">00:13 循环</span></div><div class="cap">视频 · 餐厅门口</div>';
     if (kind === "dark") return '<div class="dark">' +
-      '<i style="left:6%;top:8%;font-size:22px;transform:rotate(-7deg)">别回头</i>' +
-      '<i style="left:60%;top:6%;font-size:15px">第 3 天</i>' +
-      '<i style="left:52%;top:36%;font-size:19px;transform:rotate(5deg)">她没有走</i>' +
-      '<i style="left:8%;top:48%;font-size:16px">保单在里面</i>' +
-      '<i style="left:24%;top:74%;font-size:28px;transform:rotate(-3deg)">去 保险箱</i>' +
-      '<i style="left:80%;top:80%;font-size:13px">陈</i>' +
-      '<div class="shade"></div><span class="tip">在照片上移动鼠标或手指</span></div><div class="cap">照片 · 已调暗</div>';
-    if (kind === "file") return '<div class="file"><div class="pic" aria-label="照片：一只握着手机的手"></div><div>' +
-      '<div><b>报案人</b> 周然</div><div><b>失踪人</b> 苏晚</div>' +
-      '<div><b>时间</b> 9月26日 21:07</div><div><b>位置</b> 城南酒店 0806</div>' +
-      '<div><b>备注</b> 手机最后由他人持有，尚未找到</div></div></div><div class="cap">照片 · 报案记录</div>';
+      '<i style="left:6%;top:8%;font-size:22px;transform:rotate(-7deg)">生日快乐</i>' +
+      '<i style="left:60%;top:6%;font-size:15px">2016.5.20</i>' +
+      '<i style="left:52%;top:36%;font-size:19px;transform:rotate(5deg)">别走</i>' +
+      '<i style="left:8%;top:48%;font-size:16px">你先开口</i>' +
+      '<i style="left:24%;top:74%;font-size:28px;transform:rotate(-3deg)">去 露台</i>' +
+      '<i style="left:80%;top:80%;font-size:13px">A8</i>' +
+      '<div class="shade"></div><span class="tip">在照片上移动鼠标或手指</span></div><div class="cap">照片 · 停电后的走廊</div>';
+    if (kind === "file") return '<div class="file"><h4>订位单</h4>' +
+      '<div><b>订位人</b><span>陈铭</span></div><div><b>时间</b><span>周四 20:00</span></div>' +
+      '<div><b>位置</b><span>露台，两人位</span></div><div><b>备注</b><span>请勿打扰，蜡烛一支</span></div>' +
+      '<div><b>付款</b><span>周然（手机尾号与常用号一致）</span></div></div><div class="cap">照片 · 订位单</div>';
     return "";
   }
 
@@ -383,10 +344,6 @@
 
   async function perform(m) {
     if (m.a === "pause") return wait(m.ms);
-    if (m.a === "glitch") { if (!reduce) { app.classList.remove("glitch"); void app.offsetWidth; app.classList.add("glitch"); } blip(true); return wait(600); }
-    if (m.a === "rename") { st.ui.name = m.v; applyUI(); return wait(500); }
-    if (m.a === "status") { st.ui.status = m.v; applyUI(); return wait(300); }
-    if (m.a === "avatar") { st.ui.twisted = true; applyUI(); blip(true); return wait(900); }
     if (m.a === "recall") {
       setTyping(true); await wait(700); setTyping(false);
       var tmp = render({ f: "lin", x: m.x }, true); blip();
@@ -396,8 +353,7 @@
       return wait(500);
     }
     if (m.a === "fakeme") { await wait(300); push({ f: "me", x: m.x }); return; }
-    if (m.a === "blackout") { var bo = document.getElementById("blackout"); bo.classList.add("on"); blip(true); await wait(1800); bo.classList.remove("on"); return wait(700); }
-    if (m.a === "done") { st.done = true; save(); await wait(900); push({ f: "end", x: "欢迎回家。" }); return; }
+    if (m.a === "done") { st.done = true; save(); await wait(900); push({ f: "end", x: "今晚，我们回家。" }); return; }
     if (m.f === "sys") { await wait(350); push(m); return; }
     if (m.f === "me") { await wait(400); push(m); return; }
     return linSays(m);
@@ -471,11 +427,11 @@
 
   form.addEventListener("submit", function (e) { e.preventDefault(); var t = input.value; input.value = ""; send(t); });
 
-  // 灯：B3 = -... ...--，单位 280ms，所有视频卡共用一个节拍
+  // 灯：A8 = .- ---..，单位 280ms，所有视频卡共用一个节拍
   (function lampLoop() {
     var U = 280, seq = [];
     function sym(code) { code.split("").forEach(function (c, i) { if (i) seq.push([0, 1]); seq.push([1, c === "-" ? 3 : 1]); }); }
-    sym("-..."); seq.push([0, 3]); sym("...--"); seq.push([0, 9]);
+    sym(".-"); seq.push([0, 3]); sym("---.."); seq.push([0, 9]);
     var i = 0;
     (function step() {
       var s = seq[i % seq.length]; i++;
@@ -522,7 +478,7 @@
   else if (!st.hist.length) play("s1");
   else { lock(false); if (!st.done) armTimers(); }
 
-  console.log("%c她不在这里。你为什么要看这里？", "color:#a31d1d;font-size:14px");
+  
 })();
 </script>
 </body>
